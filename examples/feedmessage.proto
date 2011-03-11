@@ -1,0 +1,26 @@
+
+message User{
+    required string uuid    = 1;
+    required string domain  = 2;
+}
+
+message Entry{
+    required string id      = 1;
+    required string title   = 2;
+    required string summary = 3;
+    
+    optional User   author  = 4;
+    optional string link    = 5;
+    
+    optional int32  updated  = 6;
+    optional int32  publised = 7;
+    
+    optional User   owner    = 8;
+}
+
+message Feed{
+    required string id      = 1;
+    required string title   = 2;
+    
+    repeated Entry  entry   = 3;
+}

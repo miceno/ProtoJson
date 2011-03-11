@@ -1,0 +1,28 @@
+char: A, int: 65, string: A, bytes: [65]
+char: B, int: 66, string: B, bytes: [66]
+char: C, int: 67, string: C, bytes: [67]
+char: D, int: 68, string: D, bytes: [68]
+char: E, int: 69, string: E, bytes: [69]
+char: }, int: 125, string: }, bytes: [125]
+char: ?, int: 128, string: ?, bytes: [-62, -128]
+char: Ø, int: 255, string: Ø, bytes: [-61, -65]
+char: ?, int: 256, string: ?, bytes: [-60, -128]
+char: ?, int: 511, string: ?, bytes: [-57, -65]
+char: ?, int: 512, string: ?, bytes: [-56, -128]
+char: ?, int: 1023, string: ?, bytes: [-49, -65]
+char: ?, int: 1024, string: ?, bytes: [-48, -128]
+identifier: ABCDE}?Ø?????, array: [65, 66, 67, 68, 69, 125, -62, -128, -61, -65, -60, -128, -57, -65, -56, -128, -49, -65, -48, -128], size: 20
+size= 13
+char: A, int: 65
+char: B, int: 66
+char: C, int: 67
+char: D, int: 68
+char: E, int: 69
+char: }, int: 125
+char: ?, int: 128
+char: Ø, int: 255
+char: ?, int: 256
+char: ?, int: 511
+char: ?, int: 512
+char: ?, int: 1023
+char: ?, int: 1024
