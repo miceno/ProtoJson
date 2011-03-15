@@ -1,4 +1,3 @@
-
 A set of text formats to represent a protocol buffer in JSON.
 
 JsoncFormat
@@ -20,6 +19,7 @@ key of the JSON, using a list representation instead of an object
 representation.
 
 Take the following message in proto language representation:
+
     message Entry{
         required string id      = 1;
         required string title   = 2;
