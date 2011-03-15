@@ -48,6 +48,7 @@ import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.util.HexUtils;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * Provide ascii text parsing and formatting support for proto2 instances. The implementation

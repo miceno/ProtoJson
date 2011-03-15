@@ -26,7 +26,7 @@ println value
 // println "enteros " +  value
 
 
-def test=[ 65, 66, 67, 68, 69, 125, 128, 255, 256, 511, 512, 1023, 1024 ]
+def test=[ 65, 66, 67, 68, 69, 125, 128, 255, 256, 511, 512, 1023, 1024, 33333 ]
 
 /*
 // Test conversion of ints to array of bytes
@@ -65,9 +65,16 @@ test.each{
 }
 */
 
+/**
+ * converts an integer to a character in UTF8
+ */
+Character toUtf8( Integer tag) {
+    return tag as Character
+}
+
 def identifier= ""
 test.each{
-    Character u= it
+    Character u= toUtf8( it)
     String f= u
     Integer n= u
     println "char: $u, int: $n, string: $f, bytes: ${f.getBytes("UTF8")}"
