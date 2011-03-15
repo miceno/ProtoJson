@@ -1,4 +1,6 @@
 
+package com.tid.protojson;
+
 message User{
     required string uuid    = 1;
     required string domain  = 2;
