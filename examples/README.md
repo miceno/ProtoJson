@@ -20,7 +20,7 @@ representation.
 
 Take the following message in proto language representation:
 
- message Entry{
+  message Entry{
     required string id      = 1;
     required string title   = 2;
     required string summary = 3;
@@ -29,18 +29,19 @@ Take the following message in proto language representation:
     
     optional int32  updated  = 6;
     optional int32  published = 7;
- }
+  }
 
 Taken the message is
-id= "myid"
-title= "the title"
-summary= "this is a summary"
-link= "http://www.tid.es"
-published= 123456777
+
+  id= "myid"
+  title= "the title"
+  summary= "this is a summary"
+  link= "http://www.tid.es"
+  published= 123456777
 
 The representation would be:
 
-[ "12357",  // index
+  [ "12357",  // index
   "myid", 
   "the title", 
   "this is a summary", 
