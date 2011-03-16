@@ -149,13 +149,13 @@ public class JsoncFormat {
                 // object equality
                 && (field.getExtensionScope() == field.getMessageType())) {
                 // Old code: generator.print(field.getMessageType().getFullName());
-                generator.print(Integer.toString( field.getMessageType().getIndex()));
+                generator.print( Integer.toString( field.getNumber()));
             } else {
                 /**
                  * TID Optimization: Use the number of the index instead of the name
                  * Old code: generator.print(field.getName());
                  */
-                generator.print( Integer.toString( field.getIndex()));
+                generator.print( Integer.toString( field.getNumber()));
             }
             generator.print("\"");
             generator.print("]");
@@ -164,10 +164,10 @@ public class JsoncFormat {
             if (field.getType() == FieldDescriptor.Type.GROUP) {
                 // Groups must be serialized with their original capitalization.
                 // Old code: generator.print(field.getMessageType().getName());
-                generator.print( Integer.toString( field.getMessageType().getIndex()));
+                generator.print( Integer.toString( field.getNumber()));
             } else {
                 // Old code: generator.print(field.getName());
-                generator.print( Integer.toString( field.getIndex()));
+                generator.print( Integer.toString( field.getNumber()));
             }
             generator.print("\"");
         }

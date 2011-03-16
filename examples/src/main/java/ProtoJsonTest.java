@@ -6,6 +6,7 @@ import com.tid.protojson.Feedmessage.Entry;
 import com.google.protobuf.*;
 
 import com.tid.protobuf.jsonc.*;
+import com.tid.protobuf.jsone.*;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -22,11 +23,19 @@ class ProtoJsonTest{
 
         System.out.println( "Starting the example");
 
+        Feedmessage.User user = Feedmessage.User.newBuilder()
+                            .setUuid( "orestes")
+                            .setDomain( "bluevia")
+                            .build();
+
         Message someProto = Feedmessage.Entry.newBuilder()
                             .setId( "1")
                             .setTitle( "titulo")
-                            .setSummary( "resumen")
+                            .setSummary( "esto es el resumen")
+                            .setLink( "http://www.tid.es")
+                            .setOwner( user)
                             .build();
+                            
                             
         String stf = TextFormat.printToString( someProto);
         System.out.println( "textformat= " + stf);
@@ -36,6 +45,9 @@ class ProtoJsonTest{
 
         String jsoncFormat = JsoncFormat.printToString(someProto);
         System.out.println( "json Compressed Format= " + jsoncFormat);
+
+        String jsoneFormat = JsoneFormat.printToString(someProto);
+        System.out.println( "json Enhanced Format= " + jsoneFormat);
 
         Feedmessage.Entry.Builder builder = Feedmessage.Entry.newBuilder();
         try{
@@ -50,6 +62,12 @@ class ProtoJsonTest{
             Message mc= builder.build();
             String sc= JsoncFormat.printToString( mc);
             System.out.println( "json Compressed Format= " + sc);
+
+            // Json Enhanced Format test            
+            JsoneFormat.merge( jsoneFormat, builder);
+            Message me= builder.build();
+            String se= JsoneFormat.printToString( me);
+            System.out.println( "json Enhanced Format= " + se);
         }
         catch (JsonFormat.ParseException p){            
         }
