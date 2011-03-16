@@ -70,6 +70,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class JsoneFormat {
 
     final static Logger log = Logger.getLogger(JsoneFormat.class);    
+    final static int FIRST_DIGIT_CODE= '0';
     
     /**
      * Outputs a textual representation of the Protocol Message supplied into the parameter output.
@@ -136,8 +137,9 @@ public class JsoneFormat {
             if (iter.hasNext()) {
                 messageContent.listDelimiter();
             }
-            // Add the tag number to the index
-            index.append( toUtf8( field.getKey().getNumber()));
+            
+            // This is the magic: Add the tag number to the index as a Unicode char
+            index.appendCodePoint( field.getKey().getNumber() + FIRST_DIGIT_CODE);
         }
         System.out.println( "index: " + index.toString());
         
@@ -876,7 +878,7 @@ public class JsoneFormat {
 
             field = extension.descriptor;
         } else {
-            String name = tokenizer.consumeIdentifier();
+            String index = tokenizer.consumeIdentifier();
             field = type.findFieldByName(name);
 
             // Group names are expected to be capitalized as they appear in the
@@ -1468,12 +1470,5 @@ public class JsoneFormat {
 
         return result;
     }
-    
-    /**
-     * converts an integer to a character in UTF8
-     */
-    static String toUtf8( Integer tag) {
-        return tag.toString();
-    }
-    
+        
 }
