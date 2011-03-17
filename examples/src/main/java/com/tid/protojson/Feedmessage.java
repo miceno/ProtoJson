@@ -7,6 +7,7 @@ public final class Feedmessage {
   private Feedmessage() {}
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
+    registry.add(com.tid.protojson.Feedmessage.source);
   }
   public interface UserOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
@@ -18,6 +19,10 @@ public final class Feedmessage {
     // required string domain = 2;
     boolean hasDomain();
     String getDomain();
+    
+    // optional int32 number = 8;
+    boolean hasNumber();
+    int getNumber();
   }
   public static final class User extends
       com.google.protobuf.GeneratedMessage
@@ -112,9 +117,20 @@ public final class Feedmessage {
       }
     }
     
+    // optional int32 number = 8;
+    public static final int NUMBER_FIELD_NUMBER = 8;
+    private int number_;
+    public boolean hasNumber() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getNumber() {
+      return number_;
+    }
+    
     private void initFields() {
       uuid_ = "";
       domain_ = "";
+      number_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -142,6 +158,9 @@ public final class Feedmessage {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getDomainBytes());
       }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(8, number_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -158,6 +177,10 @@ public final class Feedmessage {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, getDomainBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(8, number_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -285,6 +308,8 @@ public final class Feedmessage {
         bitField0_ = (bitField0_ & ~0x00000001);
         domain_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
+        number_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
@@ -331,6 +356,10 @@ public final class Feedmessage {
           to_bitField0_ |= 0x00000002;
         }
         result.domain_ = domain_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.number_ = number_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -352,6 +381,9 @@ public final class Feedmessage {
         }
         if (other.hasDomain()) {
           setDomain(other.getDomain());
+        }
+        if (other.hasNumber()) {
+          setNumber(other.getNumber());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -400,6 +432,11 @@ public final class Feedmessage {
             case 18: {
               bitField0_ |= 0x00000002;
               domain_ = input.readBytes();
+              break;
+            }
+            case 64: {
+              bitField0_ |= 0x00000004;
+              number_ = input.readInt32();
               break;
             }
           }
@@ -480,6 +517,27 @@ public final class Feedmessage {
         onChanged();
       }
       
+      // optional int32 number = 8;
+      private int number_ ;
+      public boolean hasNumber() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public int getNumber() {
+        return number_;
+      }
+      public Builder setNumber(int value) {
+        bitField0_ |= 0x00000004;
+        number_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearNumber() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        number_ = 0;
+        onChanged();
+        return this;
+      }
+      
       // @@protoc_insertion_point(builder_scope:com.tid.protojson.User)
     }
     
@@ -491,20 +549,13 @@ public final class Feedmessage {
     // @@protoc_insertion_point(class_scope:com.tid.protojson.User)
   }
   
-  public interface EntryOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
+  public interface EntryOrBuilder extends
+      com.google.protobuf.GeneratedMessage.
+          ExtendableMessageOrBuilder<Entry> {
     
-    // required string id = 1;
+    // required int32 id = 1;
     boolean hasId();
-    String getId();
-    
-    // required string title = 2;
-    boolean hasTitle();
-    String getTitle();
-    
-    // required string summary = 3;
-    boolean hasSummary();
-    String getSummary();
+    int getId();
     
     // optional .com.tid.protojson.User author = 4;
     boolean hasAuthor();
@@ -529,8 +580,8 @@ public final class Feedmessage {
     com.tid.protojson.Feedmessage.UserOrBuilder getOwnerOrBuilder();
   }
   public static final class Entry extends
-      com.google.protobuf.GeneratedMessage
-      implements EntryOrBuilder {
+      com.google.protobuf.GeneratedMessage.ExtendableMessage<
+        Entry> implements EntryOrBuilder {
     // Use Entry.newBuilder() to construct.
     private Entry(Builder builder) {
       super(builder);
@@ -557,107 +608,21 @@ public final class Feedmessage {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // required int32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
+    private int id_;
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    
-    // required string title = 2;
-    public static final int TITLE_FIELD_NUMBER = 2;
-    private Object title_;
-    public boolean hasTitle() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    public String getTitle() {
-      Object ref = title_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          title_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getTitleBytes() {
-      Object ref = title_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        title_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    
-    // required string summary = 3;
-    public static final int SUMMARY_FIELD_NUMBER = 3;
-    private Object summary_;
-    public boolean hasSummary() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    public String getSummary() {
-      Object ref = summary_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          summary_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getSummaryBytes() {
-      Object ref = summary_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        summary_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getId() {
+      return id_;
     }
     
     // optional .com.tid.protojson.User author = 4;
     public static final int AUTHOR_FIELD_NUMBER = 4;
     private com.tid.protojson.Feedmessage.User author_;
     public boolean hasAuthor() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public com.tid.protojson.Feedmessage.User getAuthor() {
       return author_;
@@ -670,7 +635,7 @@ public final class Feedmessage {
     public static final int LINK_FIELD_NUMBER = 5;
     private Object link_;
     public boolean hasLink() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     public String getLink() {
       Object ref = link_;
@@ -702,7 +667,7 @@ public final class Feedmessage {
     public static final int UPDATED_FIELD_NUMBER = 6;
     private int updated_;
     public boolean hasUpdated() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     public int getUpdated() {
       return updated_;
@@ -712,7 +677,7 @@ public final class Feedmessage {
     public static final int PUBLISED_FIELD_NUMBER = 7;
     private int publised_;
     public boolean hasPublised() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     public int getPublised() {
       return publised_;
@@ -722,7 +687,7 @@ public final class Feedmessage {
     public static final int OWNER_FIELD_NUMBER = 8;
     private com.tid.protojson.Feedmessage.User owner_;
     public boolean hasOwner() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     public com.tid.protojson.Feedmessage.User getOwner() {
       return owner_;
@@ -732,9 +697,7 @@ public final class Feedmessage {
     }
     
     private void initFields() {
-      id_ = "";
-      title_ = "";
-      summary_ = "";
+      id_ = 0;
       author_ = com.tid.protojson.Feedmessage.User.getDefaultInstance();
       link_ = "";
       updated_ = 0;
@@ -750,14 +713,6 @@ public final class Feedmessage {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasTitle()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasSummary()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       if (hasAuthor()) {
         if (!getAuthor().isInitialized()) {
           memoizedIsInitialized = 0;
@@ -770,6 +725,10 @@ public final class Feedmessage {
           return false;
         }
       }
+      if (!extensionsAreInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -777,30 +736,29 @@ public final class Feedmessage {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
+      com.google.protobuf.GeneratedMessage
+        .ExtendableMessage<com.tid.protojson.Feedmessage.Entry>.ExtensionWriter extensionWriter =
+          newExtensionWriter();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
+        output.writeInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getTitleBytes());
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, getSummaryBytes());
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeMessage(4, author_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeBytes(5, getLinkBytes());
       }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeInt32(6, updated_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeInt32(7, publised_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeMessage(8, owner_);
       }
+      extensionWriter.writeUntil(21, output);
+      extensionWriter.writeUntil(31, output);
       getUnknownFields().writeTo(output);
     }
     
@@ -812,36 +770,29 @@ public final class Feedmessage {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
+          .computeInt32Size(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getTitleBytes());
+          .computeMessageSize(4, author_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, getSummaryBytes());
+          .computeBytesSize(5, getLinkBytes());
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, author_);
+          .computeInt32Size(6, updated_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, getLinkBytes());
+          .computeInt32Size(7, publised_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(6, updated_);
-      }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(7, publised_);
-      }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(8, owner_);
       }
+      size += extensionsSerializedSize();
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
@@ -933,8 +884,8 @@ public final class Feedmessage {
       return builder;
     }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements com.tid.protojson.Feedmessage.EntryOrBuilder {
+        com.google.protobuf.GeneratedMessage.ExtendableBuilder<
+          com.tid.protojson.Feedmessage.Entry, Builder> implements com.tid.protojson.Feedmessage.EntryOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return com.tid.protojson.Feedmessage.internal_static_com_tid_protojson_Entry_descriptor;
@@ -966,30 +917,26 @@ public final class Feedmessage {
       
       public Builder clear() {
         super.clear();
-        id_ = "";
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        title_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
-        summary_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
         if (authorBuilder_ == null) {
           author_ = com.tid.protojson.Feedmessage.User.getDefaultInstance();
         } else {
           authorBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000002);
         link_ = "";
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000004);
         updated_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000008);
         publised_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000010);
         if (ownerBuilder_ == null) {
           owner_ = com.tid.protojson.Feedmessage.User.getDefaultInstance();
         } else {
           ownerBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
       
@@ -1035,33 +982,25 @@ public final class Feedmessage {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.title_ = title_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.summary_ = summary_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
         if (authorBuilder_ == null) {
           result.author_ = author_;
         } else {
           result.author_ = authorBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.link_ = link_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.updated_ = updated_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.link_ = link_;
+        result.publised_ = publised_;
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000020;
-        }
-        result.updated_ = updated_;
-        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
-          to_bitField0_ |= 0x00000040;
-        }
-        result.publised_ = publised_;
-        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
-          to_bitField0_ |= 0x00000080;
         }
         if (ownerBuilder_ == null) {
           result.owner_ = owner_;
@@ -1087,12 +1026,6 @@ public final class Feedmessage {
         if (other.hasId()) {
           setId(other.getId());
         }
-        if (other.hasTitle()) {
-          setTitle(other.getTitle());
-        }
-        if (other.hasSummary()) {
-          setSummary(other.getSummary());
-        }
         if (other.hasAuthor()) {
           mergeAuthor(other.getAuthor());
         }
@@ -1108,20 +1041,13 @@ public final class Feedmessage {
         if (other.hasOwner()) {
           mergeOwner(other.getOwner());
         }
+        this.mergeExtensionFields(other);
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
       
       public final boolean isInitialized() {
         if (!hasId()) {
-          
-          return false;
-        }
-        if (!hasTitle()) {
-          
-          return false;
-        }
-        if (!hasSummary()) {
           
           return false;
         }
@@ -1136,6 +1062,10 @@ public final class Feedmessage {
             
             return false;
           }
+        }
+        if (!extensionsAreInitialized()) {
+          
+          return false;
         }
         return true;
       }
@@ -1163,19 +1093,9 @@ public final class Feedmessage {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
-              break;
-            }
-            case 18: {
-              bitField0_ |= 0x00000002;
-              title_ = input.readBytes();
-              break;
-            }
-            case 26: {
-              bitField0_ |= 0x00000004;
-              summary_ = input.readBytes();
+              id_ = input.readInt32();
               break;
             }
             case 34: {
@@ -1188,17 +1108,17 @@ public final class Feedmessage {
               break;
             }
             case 42: {
-              bitField0_ |= 0x00000010;
+              bitField0_ |= 0x00000004;
               link_ = input.readBytes();
               break;
             }
             case 48: {
-              bitField0_ |= 0x00000020;
+              bitField0_ |= 0x00000008;
               updated_ = input.readInt32();
               break;
             }
             case 56: {
-              bitField0_ |= 0x00000040;
+              bitField0_ |= 0x00000010;
               publised_ = input.readInt32();
               break;
             }
@@ -1217,112 +1137,25 @@ public final class Feedmessage {
       
       private int bitField0_;
       
-      // required string id = 1;
-      private Object id_ = "";
+      // required int32 id = 1;
+      private int id_ ;
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getId() {
+        return id_;
       }
-      public Builder setId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
+        id_ = 0;
         onChanged();
         return this;
-      }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
-      }
-      
-      // required string title = 2;
-      private Object title_ = "";
-      public boolean hasTitle() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      public String getTitle() {
-        Object ref = title_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          title_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      public Builder setTitle(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-        title_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearTitle() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        title_ = getDefaultInstance().getTitle();
-        onChanged();
-        return this;
-      }
-      void setTitle(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
-        title_ = value;
-        onChanged();
-      }
-      
-      // required string summary = 3;
-      private Object summary_ = "";
-      public boolean hasSummary() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      public String getSummary() {
-        Object ref = summary_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          summary_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      public Builder setSummary(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-        summary_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearSummary() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        summary_ = getDefaultInstance().getSummary();
-        onChanged();
-        return this;
-      }
-      void setSummary(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000004;
-        summary_ = value;
-        onChanged();
       }
       
       // optional .com.tid.protojson.User author = 4;
@@ -1330,7 +1163,7 @@ public final class Feedmessage {
       private com.google.protobuf.SingleFieldBuilder<
           com.tid.protojson.Feedmessage.User, com.tid.protojson.Feedmessage.User.Builder, com.tid.protojson.Feedmessage.UserOrBuilder> authorBuilder_;
       public boolean hasAuthor() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public com.tid.protojson.Feedmessage.User getAuthor() {
         if (authorBuilder_ == null) {
@@ -1349,7 +1182,7 @@ public final class Feedmessage {
         } else {
           authorBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder setAuthor(
@@ -1360,12 +1193,12 @@ public final class Feedmessage {
         } else {
           authorBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder mergeAuthor(com.tid.protojson.Feedmessage.User value) {
         if (authorBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) == 0x00000008) &&
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
               author_ != com.tid.protojson.Feedmessage.User.getDefaultInstance()) {
             author_ =
               com.tid.protojson.Feedmessage.User.newBuilder(author_).mergeFrom(value).buildPartial();
@@ -1376,7 +1209,7 @@ public final class Feedmessage {
         } else {
           authorBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder clearAuthor() {
@@ -1386,11 +1219,11 @@ public final class Feedmessage {
         } else {
           authorBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       public com.tid.protojson.Feedmessage.User.Builder getAuthorBuilder() {
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000002;
         onChanged();
         return getAuthorFieldBuilder().getBuilder();
       }
@@ -1418,7 +1251,7 @@ public final class Feedmessage {
       // optional string link = 5;
       private Object link_ = "";
       public boolean hasLink() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public String getLink() {
         Object ref = link_;
@@ -1434,19 +1267,19 @@ public final class Feedmessage {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
+  bitField0_ |= 0x00000004;
         link_ = value;
         onChanged();
         return this;
       }
       public Builder clearLink() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000004);
         link_ = getDefaultInstance().getLink();
         onChanged();
         return this;
       }
       void setLink(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000004;
         link_ = value;
         onChanged();
       }
@@ -1454,19 +1287,19 @@ public final class Feedmessage {
       // optional int32 updated = 6;
       private int updated_ ;
       public boolean hasUpdated() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       public int getUpdated() {
         return updated_;
       }
       public Builder setUpdated(int value) {
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000008;
         updated_ = value;
         onChanged();
         return this;
       }
       public Builder clearUpdated() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000008);
         updated_ = 0;
         onChanged();
         return this;
@@ -1475,19 +1308,19 @@ public final class Feedmessage {
       // optional int32 publised = 7;
       private int publised_ ;
       public boolean hasPublised() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       public int getPublised() {
         return publised_;
       }
       public Builder setPublised(int value) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000010;
         publised_ = value;
         onChanged();
         return this;
       }
       public Builder clearPublised() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000010);
         publised_ = 0;
         onChanged();
         return this;
@@ -1498,7 +1331,7 @@ public final class Feedmessage {
       private com.google.protobuf.SingleFieldBuilder<
           com.tid.protojson.Feedmessage.User, com.tid.protojson.Feedmessage.User.Builder, com.tid.protojson.Feedmessage.UserOrBuilder> ownerBuilder_;
       public boolean hasOwner() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       public com.tid.protojson.Feedmessage.User getOwner() {
         if (ownerBuilder_ == null) {
@@ -1517,7 +1350,7 @@ public final class Feedmessage {
         } else {
           ownerBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000020;
         return this;
       }
       public Builder setOwner(
@@ -1528,12 +1361,12 @@ public final class Feedmessage {
         } else {
           ownerBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000020;
         return this;
       }
       public Builder mergeOwner(com.tid.protojson.Feedmessage.User value) {
         if (ownerBuilder_ == null) {
-          if (((bitField0_ & 0x00000080) == 0x00000080) &&
+          if (((bitField0_ & 0x00000020) == 0x00000020) &&
               owner_ != com.tid.protojson.Feedmessage.User.getDefaultInstance()) {
             owner_ =
               com.tid.protojson.Feedmessage.User.newBuilder(owner_).mergeFrom(value).buildPartial();
@@ -1544,7 +1377,7 @@ public final class Feedmessage {
         } else {
           ownerBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000020;
         return this;
       }
       public Builder clearOwner() {
@@ -1554,11 +1387,11 @@ public final class Feedmessage {
         } else {
           ownerBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
       public com.tid.protojson.Feedmessage.User.Builder getOwnerBuilder() {
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000020;
         onChanged();
         return getOwnerFieldBuilder().getBuilder();
       }
@@ -1597,7 +1430,7 @@ public final class Feedmessage {
   public interface FeedOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string id = 1;
+    // optional string id = 1;
     boolean hasId();
     String getId();
     
@@ -1644,7 +1477,7 @@ public final class Feedmessage {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // optional string id = 1;
     public static final int ID_FIELD_NUMBER = 1;
     private Object id_;
     public boolean hasId() {
@@ -1739,10 +1572,6 @@ public final class Feedmessage {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
-      if (!hasId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       if (!hasTitle()) {
         memoizedIsInitialized = 0;
         return false;
@@ -2031,10 +1860,6 @@ public final class Feedmessage {
       }
       
       public final boolean isInitialized() {
-        if (!hasId()) {
-          
-          return false;
-        }
         if (!hasTitle()) {
           
           return false;
@@ -2093,7 +1918,7 @@ public final class Feedmessage {
       
       private int bitField0_;
       
-      // required string id = 1;
+      // optional string id = 1;
       private Object id_ = "";
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
@@ -2362,6 +2187,14 @@ public final class Feedmessage {
     // @@protoc_insertion_point(class_scope:com.tid.protojson.Feed)
   }
   
+  public static final int SOURCE_FIELD_NUMBER = 10;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.lang.String> source = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.String.class,
+        null);
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_com_tid_protojson_User_descriptor;
   private static
@@ -2386,15 +2219,16 @@ public final class Feedmessage {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\021feedmessage.proto\022\021com.tid.protojson\"$" +
-      "\n\004User\022\014\n\004uuid\030\001 \002(\t\022\016\n\006domain\030\002 \002(\t\"\265\001\n" +
-      "\005Entry\022\n\n\002id\030\001 \002(\t\022\r\n\005title\030\002 \002(\t\022\017\n\007sum" +
-      "mary\030\003 \002(\t\022\'\n\006author\030\004 \001(\0132\027.com.tid.pro" +
-      "tojson.User\022\014\n\004link\030\005 \001(\t\022\017\n\007updated\030\006 \001" +
-      "(\005\022\020\n\010publised\030\007 \001(\005\022&\n\005owner\030\010 \001(\0132\027.co" +
-      "m.tid.protojson.User\"J\n\004Feed\022\n\n\002id\030\001 \002(\t" +
-      "\022\r\n\005title\030\002 \002(\t\022\'\n\005entry\030\003 \003(\0132\030.com.tid" +
-      ".protojson.Entry"
+      "\n\021feedmessage.proto\022\021com.tid.protojson\"4" +
+      "\n\004User\022\014\n\004uuid\030\001 \002(\t\022\016\n\006domain\030\002 \002(\t\022\016\n\006" +
+      "number\030\010 \001(\005\"\241\001\n\005Entry\022\n\n\002id\030\001 \002(\005\022\'\n\006au" +
+      "thor\030\004 \001(\0132\027.com.tid.protojson.User\022\014\n\004l" +
+      "ink\030\005 \001(\t\022\017\n\007updated\030\006 \001(\005\022\020\n\010publised\030\007" +
+      " \001(\005\022&\n\005owner\030\010 \001(\0132\027.com.tid.protojson." +
+      "User*\004\010\n\020\025*\004\010\025\020\037\"J\n\004Feed\022\n\n\002id\030\001 \001(\t\022\r\n\005" +
+      "title\030\002 \002(\t\022\'\n\005entry\030\003 \003(\0132\030.com.tid.pro" +
+      "tojson.Entry:(\n\006source\022\030.com.tid.protojs" +
+      "on.Entry\030\n \001(\t"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -2406,7 +2240,7 @@ public final class Feedmessage {
           internal_static_com_tid_protojson_User_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_com_tid_protojson_User_descriptor,
-              new java.lang.String[] { "Uuid", "Domain", },
+              new java.lang.String[] { "Uuid", "Domain", "Number", },
               com.tid.protojson.Feedmessage.User.class,
               com.tid.protojson.Feedmessage.User.Builder.class);
           internal_static_com_tid_protojson_Entry_descriptor =
@@ -2414,7 +2248,7 @@ public final class Feedmessage {
           internal_static_com_tid_protojson_Entry_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_com_tid_protojson_Entry_descriptor,
-              new java.lang.String[] { "Id", "Title", "Summary", "Author", "Link", "Updated", "Publised", "Owner", },
+              new java.lang.String[] { "Id", "Author", "Link", "Updated", "Publised", "Owner", },
               com.tid.protojson.Feedmessage.Entry.class,
               com.tid.protojson.Feedmessage.Entry.Builder.class);
           internal_static_com_tid_protojson_Feed_descriptor =
@@ -2425,6 +2259,7 @@ public final class Feedmessage {
               new java.lang.String[] { "Id", "Title", "Entry", },
               com.tid.protojson.Feedmessage.Feed.class,
               com.tid.protojson.Feedmessage.Feed.Builder.class);
+          source.internalInit(descriptor.getExtensions().get(0));
           return null;
         }
       };

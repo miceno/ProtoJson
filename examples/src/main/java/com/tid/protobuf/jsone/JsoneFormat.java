@@ -141,7 +141,7 @@ public class JsoneFormat {
             // This is the magic: Add the tag number to the index as a Unicode char
             index.appendCodePoint( field.getKey().getNumber() + FIRST_DIGIT_CODE);
         }
-        System.out.println( "index: " + index.toString());
+        // System.out.println( "index: " + index.toString());
         
         if (message.getUnknownFields().asMap().size() > 0){
             messageContent.listDelimiter();
@@ -166,6 +166,20 @@ public class JsoneFormat {
                                          Object value,
                                          JsonGenerator generator) throws IOException {
 
+        // TODO: print extensions.
+        if (field.isExtension()) {
+            generator.print("[");
+            generator.print("\"");
+            // Old code: generator.print(field.getMessageType().getFullName());
+            generator.print( Integer.toString( field.getNumber()));
+            generator.print("\"");
+            generator.print("]");
+        } else {
+            // Do NOTHING
+        }
+        
+
+        // Repeated fields
         if (field.isRepeated()) {
             // Repeated field. Print each element.
             generator.startList();
@@ -238,7 +252,6 @@ public class JsoneFormat {
     protected static void printUnknownFields(UnknownFieldSet unknownFields, JsonGenerator generator) throws IOException {
         boolean firstField = true;
         
-        System.out.println("printUnknownFields");
         for (Map.Entry<Integer, UnknownFieldSet.Field> entry : unknownFields.asMap().entrySet()) {
             UnknownFieldSet.Field field = entry.getValue();
 
@@ -829,7 +842,18 @@ public class JsoneFormat {
         // Based on the state machine @ http://json.org/
 
         tokenizer.consume("["); // Needs to happen when the object starts.
+        String index= tokenizer.consumeString();
         while (!tokenizer.tryConsume("]")) { // Continue till the object is done
+            
+            // Get field by number
+         FieldDescriptor field;
+         boolean unknown = false;
+            
+            // Handle value
+            // handleValue(tokenizer, extensionRegistry, builder, field, extension, unknown);
+            // tokenizer.tryConsume(",");
+            
+            // Old code: mergeField(tokenizer, extensionRegistry, builder);
             mergeField(tokenizer, extensionRegistry, builder);
         }
         // Test to make sure the tokenizer has reached the end of the stream.
@@ -853,6 +877,9 @@ public class JsoneFormat {
         Descriptor type = builder.getDescriptorForType();
         ExtensionRegistry.ExtensionInfo extension = null;
         boolean unknown = false;
+        
+        String index = tokenizer.consumeString();
+        
 
         if (tokenizer.tryConsume("[")) {
             // An extension.
@@ -878,7 +905,8 @@ public class JsoneFormat {
 
             field = extension.descriptor;
         } else {
-            String index = tokenizer.consumeIdentifier();
+            String name = tokenizer.consumeString();
+            
             field = type.findFieldByName(name);
 
             // Group names are expected to be capitalized as they appear in the
@@ -916,6 +944,7 @@ public class JsoneFormat {
             }
         }
 
+        // TODO: At least two fields: one for the index, and one for the value
         if (field != null) {
             tokenizer.consume(":");
             boolean array = tokenizer.tryConsume("[");

@@ -140,37 +140,9 @@ public class JsoncFormat {
     private static void printSingleField(FieldDescriptor field,
                                          Object value,
                                          JsonGenerator generator) throws IOException {
-        if (field.isExtension()) {
-            generator.print("[");
-            generator.print("\"");
-            // We special-case MessageSet elements for compatibility with proto1.
-            if (field.getContainingType().getOptions().getMessageSetWireFormat()
-                && (field.getType() == FieldDescriptor.Type.MESSAGE) && (field.isOptional())
-                // object equality
-                && (field.getExtensionScope() == field.getMessageType())) {
-                // Old code: generator.print(field.getMessageType().getFullName());
-                generator.print( Integer.toString( field.getNumber()));
-            } else {
-                /**
-                 * TID Optimization: Use the number of the index instead of the name
-                 * Old code: generator.print(field.getName());
-                 */
-                generator.print( Integer.toString( field.getNumber()));
-            }
-            generator.print("\"");
-            generator.print("]");
-        } else {
-            generator.print("\"");
-            if (field.getType() == FieldDescriptor.Type.GROUP) {
-                // Groups must be serialized with their original capitalization.
-                // Old code: generator.print(field.getMessageType().getName());
-                generator.print( Integer.toString( field.getNumber()));
-            } else {
-                // Old code: generator.print(field.getName());
-                generator.print( Integer.toString( field.getNumber()));
-            }
-            generator.print("\"");
-        }
+        generator.print("\"");
+        generator.print( Integer.toString( field.getNumber()));
+        generator.print("\"");
 
         // Done with the name, on to the value
 
@@ -909,27 +881,10 @@ public class JsoncFormat {
 
             field = extension.descriptor;
         } else {
-            String name = tokenizer.consumeIdentifier();
-            field = type.findFieldByName(name);
-
-            // Group names are expected to be capitalized as they appear in the
-            // .proto file, which actually matches their type names, not their field
-            // names.
-            if (field == null) {
-                // Explicitly specify US locale so that this code does not break when
-                // executing in Turkey.
-                String lowerName = name.toLowerCase(Locale.US);
-                field = type.findFieldByName(lowerName);
-                // If the case-insensitive match worked but the field is NOT a group,
-                if ((field != null) && (field.getType() != FieldDescriptor.Type.GROUP)) {
-                    field = null;
-                }
-            }
-            // Again, special-case group names as described above.
-            if ((field != null) && (field.getType() == FieldDescriptor.Type.GROUP)
-                && !field.getMessageType().getName().equals(name)) {
-                field = null;
-            }
+            // Old code: String name = tokenizer.consumeIdentifier();
+            // Old code: field = type.findFieldByName(name);
+            String name = tokenizer.consumeString();
+            field = type.findFieldByNumber( Integer.parseInt( name));
 
             // Last try to lookup by field-index if 'name' is numeric,
             // which indicates a possible unknown field
