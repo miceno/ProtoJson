@@ -1,11 +1,11 @@
-ProtoJsonFormat
-===============
+ProtoJsonIndexedFormat
+======================
 
-ProtoJsonFormat is a Java class for transforming a Protocol Buffer message into a 
+ProtoJsonIndexedFormat is a Java class for transforming a Protocol Buffer message into a 
 text representation in JSON, and viceversa.
 
-It is a representation for the message as a set of pairs keyname:value, 
-where the key is the tag number of the field.
+It is a representation for the message as a list of fields. The first field is 
+an index of all the fields in the message.
 
 Thus for a message defined as:
 
@@ -64,13 +64,10 @@ The TextFormat representation is 255 chars long:
       [com.tid.protojson.source]: "feed de origen"
     }
 
-The ProtoJsonFormat representation is just 188 chars (for readability I included newlines):
-
-    {"1": "feed1","2": "Feed number 1",
-     "3": [ {"1": 1,"5": "http://www.tid.es","8": {"1": "orestes","2": "bluevia"}},
-            {"1": 2,"5": "http://www.google.es","8": {"1": "orestes","2": "bluevia"}}
-            ]}
-
+The ProtoJsonIndexedFormat representation is just 175 chars (for readability I included newlines):
+    ["123","feed1","Feed number 1",
+     [ ["158",1,"http://www.tid.es",["12","orestes","bluevia"]],
+       ["158:",2,"http://www.google.es",["12","orestes","bluevia"],"feed de origen"]]]
 
 Usage
 ======
@@ -84,7 +81,7 @@ To output a string from a message just call the printToString static method:
     // Build the message
     Feedmessage.Feed feed= builder.build();
     // Print the JSON String
-    String sc= ProtoJsonFormat.printToString( feed);
+    String sc= ProtoJsonIndexedFormat.printToString( feed);
     System.out.println( "json Format= " + sc);
     
 
@@ -92,7 +89,7 @@ To build a message from a string call the merge static method:
     
     Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
     String jsonFormat= ___ a JSON text string ___
-    ProtoJsonFormat.merge( jsonFormat, builder);
+    ProtoJsonIndexedFormat.merge( jsonFormat, builder);
     Feedmessage.Feed feed= builder.build();
 
 Extensions
@@ -106,15 +103,15 @@ In case you know the extensions you should provide them as a parameter to merge:
     ExtensionRegistry registry = ExtensionRegistry.newInstance();
     registry.add( Feedmessage.source);
     
-    ProtoJsonFormat.merge( jsonFormat, registry, builder);
+    ProtoJsonIndexedFormat.merge( jsonFormat, registry, builder);
     Feedmessage.Feed feed= builder.build();
 
 
 Credits
 ========
 
+
 It is based on the original code of TextFormat and JsonFormat.
 
 JsonFormat: http://code.google.com/p/protobuf-java-format/
 TextFormat: http://code.google.com/apis/protocolbuffers/docs/reference/java/com/google/protobuf/TextFormat.html
-
