@@ -1,22 +1,25 @@
 A set of text formats to represent a protocol buffer in JSON.
 
-JsoncFormat
+ProtoJson
 ===========
-JsoncFormat is a new text representation of a protocol buffer in JSON.
+ProtoJson is a new text representation of a protocol buffer in JSON.
 Instead of representing the message as a set of pairs keyname:value, it
-uses the field number id.
+uses the tag number id.
 
 It is based on the original code of TextFormat and JsonFormat.
 
 JsonFormat: http://code.google.com/p/protobuf-java-format/
 TextFormat: http://code.google.com/apis/protocolbuffers/docs/reference/java/com/google/protobuf/TextFormat.html
 
-JsoneFormat
+ProtoJsonIndexed
 ===========
 
-This is version 2 of the text representation. It is based on enhancing the
-key of the JSON, using a list representation instead of an object
-representation.
+This is version 2 of the text representation. It is based on using an index that
+aggregates all the tag numbers of the fields in the message. In addition, we use a 
+list representation instead of an object representation.
+
+This representation is an improvement in space over ProtoJson, with an average reduction 
+in size of 10%.
 
 Take the following message in proto language representation:
 
@@ -57,19 +60,12 @@ character starting from ASCII char 48 ("0"). This way, tag numbers bellow
 FAQ
 ===
 
-What is the difference of JsoncFormat vs. JsoneFormat? 
+What is the difference of ProtoJson vs. ProtoJsonIndexed? 
 
-JsoncFormat is version 1 of TID Protocol Buffer JSON serialization.
-JsoneFormat is version 2 of TID Protocol Buffer JSON serialization.
+ProtoJson is version 1 of TID Protocol Buffer JSON serialization.
+ProtoJsonIndexed is version 2 of TID Protocol Buffer JSON serialization.
 
-What does the "c" in JsoncFormat mean?
+What does the "indexed" in ProtoJsonIndexed mean?
 
-The "c" stands for "compact". It produces a more compact text representation
-than the standard JSON object notation.
-
-What does the "e" in JsoneFormat mean?
-
-The "e" stands for "enhanced". It produces a JSON compact representation of
-a Protocol Buffers message by using JSON lists of elements instead of 
-JSON objects.
-
+The "indexed" version means we use a compact representation of the tag numbers
+included in a message.
