@@ -5,8 +5,8 @@ import com.tid.protojson.Feedmessage.Entry;
 
 import com.google.protobuf.*;
 
-import com.tid.protobuf.jsonc.*;
-import com.tid.protobuf.jsone.*;
+import com.tid.protobuf.protojson.*;
+import com.tid.protobuf.protojsonindexed.*;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -99,10 +99,10 @@ class ProtoJsonTest{
         try{
             Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
             // Json Compressed Format test            
-            String jsoncFormat = JsoncFormat.printToString( feed);
-            JsoncFormat.merge( jsoncFormat, builder);
+            String jsonFormat = ProtoJsonFormat.printToString( feed);
+            ProtoJsonFormat.merge( jsonFormat, builder);
             Message mc= builder.build();
-            String sc= JsoncFormat.printToString( mc);
+            String sc= ProtoJsonFormat.printToString( mc);
             System.out.println( "json Compressed Format= " + sc);
         }
         catch (Exception e){
@@ -111,12 +111,12 @@ class ProtoJsonTest{
 
         try{
             Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
-            // Json Enhanced Format test            
-            String jsoneFormat = JsoneFormat.printToString( feed);
-            JsoneFormat.merge( jsoneFormat, builder);
+            // Json indexed Format test            
+            String jsonindexedFormat = ProtoJsonIndexedFormat.printToString( feed);
+            ProtoJsonIndexedFormat.merge( jsonindexedFormat, builder);
             Message me= builder.build();
-            String se= JsoneFormat.printToString( me);
-            System.out.println( "json Enhanced Format= " + se);
+            String se= ProtoJsonIndexedFormat.printToString( me);
+            System.out.println( "json indexed Format= " + se);
         }
         catch (Exception e){
             System.out.println( e);
@@ -132,11 +132,11 @@ class ProtoJsonTest{
             String jsonFormat = JsonFormat.printToString(m);
             System.out.println( "jsonFormat= " + jsonFormat);
 
-            String jsoncFormat = JsoncFormat.printToString(m);
-            System.out.println( "json Compressed Format= " + jsoncFormat);
+            String protojsonFormat = ProtoJsonFormat.printToString(m);
+            System.out.println( "json Compressed Format= " + jsonFormat);
 
-            String jsoneFormat = JsoneFormat.printToString(m);
-            System.out.println( "json Enhanced Format= " + jsoneFormat);
+            String jsonindexedFormat = ProtoJsonIndexedFormat.printToString(m);
+            System.out.println( "json indexed Format= " + jsonindexedFormat);
     }
 
 }

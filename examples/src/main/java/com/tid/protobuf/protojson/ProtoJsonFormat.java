@@ -26,7 +26,7 @@
 	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 	OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.tid.protobuf.jsonc;
+package com.tid.protobuf.protojson;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -66,7 +66,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * @author wenboz@google.com Wenbo Zhu
  * @author kenton@google.com Kenton Varda
  */
-public class JsoncFormat {
+public class ProtoJsonFormat {
 
     /**
      * Outputs a textual representation of the Protocol Message supplied into the parameter output.
@@ -1276,7 +1276,7 @@ public class JsoncFormat {
     }
 
     /**
-     * Thrown by {@link JsoncFormat#unescapeBytes} and {@link JsoncFormat#unescapeText} when an
+     * Thrown by {@link ProtoJsonFormat#unescapeBytes} and {@link ProtoJsonFormat#unescapeText} when an
      * invalid escape sequence is seen.
      */
     static class InvalidEscapeSequence extends IOException {

@@ -26,7 +26,7 @@
 	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 	OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.tid.protobuf.jsone;
+package com.tid.protobuf.protojsonindexed;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -67,9 +67,9 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * @author wenboz@google.com Wenbo Zhu
  * @author kenton@google.com Kenton Varda
  */
-public class JsoneFormat {
+public class ProtoJsonIndexedFormat {
 
-    final static Logger log = Logger.getLogger(JsoneFormat.class);    
+    final static Logger log = Logger.getLogger(ProtoJsonIndexedFormat.class);    
     final static int FIRST_DIGIT_CODE= '0';
     
     /**
@@ -1319,7 +1319,7 @@ public class JsoneFormat {
     }
 
     /**
-     * Thrown by {@link JsoneFormat#unescapeBytes} and {@link JsoneFormat#unescapeText} when an
+     * Thrown by {@link ProtoJsonIndexedFormat#unescapeBytes} and {@link ProtoJsonIndexedFormat#unescapeText} when an
      * invalid escape sequence is seen.
      */
     static class InvalidEscapeSequence extends IOException {
