@@ -48,13 +48,14 @@ class ProtoJsonTest{
             .addEntry( entry2)
             .build();
                             
+        System.out.println( "***** output *****");
         test( entry1, "entry1");
         test( entry2, "entry2");
         test( feed, "feed");
         
 
 
-        System.out.println("*********************************");
+        System.out.println( "****** input ******");
         try{
             // TextFormat test
             Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
@@ -100,10 +101,12 @@ class ProtoJsonTest{
             Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
             // Json Compressed Format test            
             String jsonFormat = ProtoJsonFormat.printToString( feed);
-            ProtoJsonFormat.merge( jsonFormat, builder);
+            ExtensionRegistry registry = ExtensionRegistry.newInstance();
+            registry.add( Feedmessage.source);
+            ProtoJsonFormat.merge( jsonFormat, registry, builder);
             Message mc= builder.build();
             String sc= ProtoJsonFormat.printToString( mc);
-            System.out.println( "json Compressed Format= " + sc);
+            System.out.println( "ProtoJSON Format= " + sc);
         }
         catch (Exception e){
             System.out.println( e);
@@ -124,7 +127,7 @@ class ProtoJsonTest{
     }
 
     static void test( Message m, String display){
-            System.out.println( "prueba " + display);
+            System.out.println( "Printing prueba " + display);
             
             String stf = TextFormat.printToString( m);
             System.out.println( "textformat ***************\n" + stf);
@@ -133,7 +136,7 @@ class ProtoJsonTest{
             System.out.println( "jsonFormat= " + jsonFormat);
 
             String protojsonFormat = ProtoJsonFormat.printToString(m);
-            System.out.println( "json Compressed Format= " + jsonFormat);
+            System.out.println( "ProtoJSON Format= " + protojsonFormat);
 
             String jsonindexedFormat = ProtoJsonIndexedFormat.printToString(m);
             System.out.println( "json indexed Format= " + jsonindexedFormat);

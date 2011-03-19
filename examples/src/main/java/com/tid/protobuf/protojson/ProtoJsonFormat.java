@@ -39,6 +39,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import com.google.protobuf.ByteString;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
@@ -67,6 +69,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * @author kenton@google.com Kenton Varda
  */
 public class ProtoJsonFormat {
+    static Logger log = Logger.getLogger( ProtoJsonFormat.class);
 
     /**
      * Outputs a textual representation of the Protocol Message supplied into the parameter output.
@@ -108,6 +111,7 @@ public class ProtoJsonFormat {
      * Like {@code print()}, but writes directly to a {@code String} and returns it.
      */
     public static String printToString(UnknownFieldSet fields) {
+        log.debug( "unknown");
         try {
             StringBuilder text = new StringBuilder();
             print(fields, text);
@@ -143,16 +147,9 @@ public class ProtoJsonFormat {
         generator.print("\"");
         generator.print( Integer.toString( field.getNumber()));
         generator.print("\"");
+        generator.print(": ");
 
         // Done with the name, on to the value
-
-        if (field.getJavaType() == FieldDescriptor.JavaType.MESSAGE) {
-            generator.print(": ");
-            generator.indent();
-        } else {
-            generator.print(": ");
-        }
-
 
         if (field.isRepeated()) {
             // Repeated field. Print each element.
@@ -166,9 +163,6 @@ public class ProtoJsonFormat {
             generator.print("]");
         } else {
             printFieldValue(field, value, generator);
-            if (field.getJavaType() == FieldDescriptor.JavaType.MESSAGE) {
-                generator.outdent();
-            }
         }
     }
 
@@ -241,21 +235,25 @@ public class ProtoJsonFormat {
 
             boolean firstValue = true;
             for (long value : field.getVarintList()) {
+                log.trace( "");
                 if (firstValue) {firstValue = false;}
                 else {generator.print(", ");}
                 generator.print(unsignedToString(value));
             }
             for (int value : field.getFixed32List()) {
+                log.trace( "");
                 if (firstValue) {firstValue = false;}
                 else {generator.print(", ");}
                 generator.print(String.format((Locale) null, "0x%08x", value));
             }
             for (long value : field.getFixed64List()) {
+                log.trace( "");
                 if (firstValue) {firstValue = false;}
                 else {generator.print(", ");}
                 generator.print(String.format((Locale) null, "0x%016x", value));
             }
             for (ByteString value : field.getLengthDelimitedList()) {
+                log.trace( "");
                 if (firstValue) {firstValue = false;}
                 else {generator.print(", ");}
                 generator.print("\"");
@@ -263,6 +261,7 @@ public class ProtoJsonFormat {
                 generator.print("\"");
             }
             for (UnknownFieldSet value : field.getGroupList()) {
+                log.trace( "");
                 if (firstValue) {firstValue = false;}
                 else {generator.print(", ");}
                 generator.print("{");
@@ -833,6 +832,7 @@ public class ProtoJsonFormat {
 
         tokenizer.consume("{"); // Needs to happen when the object starts.
         while (!tokenizer.tryConsume("}")) { // Continue till the object is done
+            log.trace( "");
             mergeField(tokenizer, extensionRegistry, builder);
         }
         // Test to make sure the tokenizer has reached the end of the stream.
@@ -857,49 +857,42 @@ public class ProtoJsonFormat {
         ExtensionRegistry.ExtensionInfo extension = null;
         boolean unknown = false;
 
-        if (tokenizer.tryConsume("[")) {
-            // An extension.
-            StringBuilder name = new StringBuilder(tokenizer.consumeIdentifier());
-            while (tokenizer.tryConsume(".")) {
-                name.append(".");
-                name.append(tokenizer.consumeIdentifier());
+        // Old code: String name = tokenizer.consumeIdentifier();
+        // Old code: field = type.findFieldByName(name);
+        String name = tokenizer.consumeIdentifier();
+        log.trace( "");
+        
+        // TODO: Handle parse exception
+        Integer number= Integer.parseInt( name);
+        
+        field = type.findFieldByNumber( number);
+
+        if( field == null){
+            // Not a field, maybe an extension
+            if( type.isExtensionNumber( number)){
+                log.trace( "This is an extension: " + number);
+                extension= extensionRegistry.findExtensionByNumber( type, number);
+                if( extension != null){
+                    log.trace( "Found extension: " + number);
+                    field= extension.descriptor;
+                }
             }
-
-            extension = extensionRegistry.findExtensionByName(name.toString());
-
-            if (extension == null) {
-                throw tokenizer.parseExceptionPreviousToken("Extension \""
-                                                            + name
-                                                            + "\" not found in the ExtensionRegistry.");
-            } else if (extension.descriptor.getContainingType() != type) {
-                throw tokenizer.parseExceptionPreviousToken("Extension \"" + name
-                                                            + "\" does not extend message type \""
-                                                            + type.getFullName() + "\".");
-            }
-
-            tokenizer.consume("]");
-
-            field = extension.descriptor;
-        } else {
-            // Old code: String name = tokenizer.consumeIdentifier();
-            // Old code: field = type.findFieldByName(name);
-            String name = tokenizer.consumeString();
-            field = type.findFieldByNumber( Integer.parseInt( name));
-
-            // Last try to lookup by field-index if 'name' is numeric,
-            // which indicates a possible unknown field
-            if (field == null && DIGITS.matcher(name).matches()) {
-                field = type.findFieldByNumber(Integer.parseInt(name));
+                
+            // Not a known extension, so it is an unknown
+            if( field == null){
+                log.trace( "Unknown field");
                 unknown = true;
             }
-
-            // Disabled throwing exception if field not found, since it could be a different version.
-            if (field == null) {
-                handleMissingField(tokenizer, extensionRegistry, builder);
-                //throw tokenizer.parseExceptionPreviousToken("Message type \"" + type.getFullName()
-                //                                            + "\" has no field named \"" + name
-                //                                            + "\".");
-            }
+        }
+        
+        // Disabled throwing exception if field not found, since it could be a different version.
+        if (unknown) {
+            // Get the UnknownFieldSet
+            UnknownFieldSet u= builder.getUnknownFields();
+            UnknownFieldSet.Builder unkBuilder= UnknownFieldSet.newBuilder();
+            handleUnknownField(tokenizer, unkBuilder, number);
+            unkBuilder.mergeFrom( u);
+            builder.setUnknownFields( unkBuilder.build());
         }
 
         if (field != null) {
@@ -921,39 +914,73 @@ public class ProtoJsonFormat {
             mergeField(tokenizer, extensionRegistry, builder);
         }
     }
+    
+    // TODO: create the unknownfieldset for the builder
+    private static void handleUnknownField(Tokenizer tokenizer,
+                                           UnknownFieldSet.Builder builder,
+                                           Integer number) throws ParseException {                               
+       // TODO: make sure an UnknownFieldSet exists
+       log.trace( "Unknown field: " + number);
+       tokenizer.consume(":");
+       boolean array = tokenizer.tryConsume("[");
 
-    private static void handleMissingField(Tokenizer tokenizer,
-                                           ExtensionRegistry extensionRegistry,
-                                           Message.Builder builder) throws ParseException {
-        tokenizer.tryConsume(":");
+       if (array) {
+           log.trace( "consuming an array");
+           while (!tokenizer.tryConsume("]")) {
+               handleUnknownValue(tokenizer, builder, number);
+               tokenizer.tryConsume(",");
+           }
+       } else {
+           log.trace( "consuming an object or primitive");
+           handleUnknownValue(tokenizer, builder, number);
+       }                                               
+    }
+    
+    private static void handleUnknownValue(Tokenizer tokenizer,
+                                    UnknownFieldSet.Builder builder,
+                                    Integer number) throws ParseException {
+    // TODO: merge with UnknownFieldSet of the builder
+    /*
+    builder.setUnknownFields(
+        builder
+        .addField(number,
+            UnknownFieldSet.Field.newBuilder()
+                .addVarint(unknownFieldVal).build())
+        .build());
+    */
+    
+        log.debug( "TODO: handleUnknownValue");
         if ("{".equals(tokenizer.currentToken())) {
             // Message structure
             tokenizer.consume("{");
             do {
-                tokenizer.consumeIdentifier();
-                handleMissingField(tokenizer, extensionRegistry, builder);
+                log.trace( "consuming members of an object");
+                handleUnknownField(tokenizer, builder, number);
             } while (tokenizer.tryConsume(","));
             tokenizer.consume("}");
-        } else if ("[".equals(tokenizer.currentToken())) {
-            // Collection
-            tokenizer.consume("[");
-            do {
-                handleMissingField(tokenizer, extensionRegistry, builder);
-            } while (tokenizer.tryConsume(","));
-            tokenizer.consume("]");
-        } else { //if (!",".equals(tokenizer.currentToken)){
+        }  
+        else { //if (!",".equals(tokenizer.currentToken)){
+            UnknownFieldSet.Field.Builder field= UnknownFieldSet.Field.newBuilder();
             // Primitive value
             if ("null".equals(tokenizer.currentToken())) {
+                log.trace( "null");
                 tokenizer.consume("null");
             } else if (tokenizer.lookingAtInteger()) {
-                tokenizer.consumeInt64();
+                Long l= tokenizer.consumeInt64();
+                field.addFixed64( l);
+                log.trace( "long= " + l);
             } else if (tokenizer.lookingAtBoolean()) {
-                tokenizer.consumeBoolean();
+                boolean b= tokenizer.consumeBoolean();
+                field.addVarint( (b) ? 1: 0 );
+                log.trace( "boolean= " + b);
             } else {
-                tokenizer.consumeString();
+                String string= tokenizer.consumeString();
+                field.addLengthDelimited( ByteString.copyFromUtf8( string));
+                log.trace( "string= " + string);
             }
         }
     }
+    
 
     private static void handleValue(Tokenizer tokenizer,
                                     ExtensionRegistry extensionRegistry,
