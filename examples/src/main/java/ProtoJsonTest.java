@@ -19,8 +19,10 @@ import java.io.PrintStream;
 //import java.text.ParseException;
 
 class ProtoJsonTest{
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
+        ProtoGenerator generator= new ProtoGenerator( System.out);
+        
         System.out.println( "Starting the example");
 
         Feedmessage.User user = Feedmessage.User.newBuilder()
@@ -48,22 +50,27 @@ class ProtoJsonTest{
             .addEntry( entry2)
             .build();
                             
-        System.out.println( "***** output *****");
+        System.out.println( "***** Testing output *****");
         test( entry1, "entry1");
         test( entry2, "entry2");
         test( feed, "feed");
         
 
 
-        System.out.println( "****** input ******");
+        System.out.println( "***** Testing input *****");
+        
+        testTextFormat( feed);
+        testTextFormatFile( new File( "textformat.txt"));
+        
         try{
             // TextFormat test
             Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
             String textFormat = TextFormat.printToString( feed);
-//            String jsonFormat = "{\"id\": \"feed1\",\"title\": \"Feed number 1\",\"entry\": [{\"id\": 1,\"link\": \"http://www.tid.es\",\"owner\": {\"uuid\": \"orestes\",\"domain\": \"bluevia\"}},{\"id\": 2,\"link\": \"http://www.google.es\",\"owner\": {\"uuid\": \"orestes\",\"domain\": \"bluevia\"},\"11\": \"feed de origen\"}]}";
 
             ExtensionRegistry registry = ExtensionRegistry.newInstance();
             registry.add( Feedmessage.source);
+            
+            // Read message from text
             TextFormat.merge(textFormat, registry, builder);
             Message m= builder.build();
             String s= TextFormat.printToString( m);
@@ -81,12 +88,14 @@ class ProtoJsonTest{
             // JsonFormat test
             Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
             String jsonFormat = JsonFormat.printToString( feed);
-//            String jsonFormat = "{\"id\": \"feed1\",\"title\": \"Feed number 1\",\"entry\": [{\"id\": 1,\"link\": \"http://www.tid.es\",\"owner\": {\"uuid\": \"orestes\",\"domain\": \"bluevia\"}},{\"id\": 2,\"link\": \"http://www.google.es\",\"owner\": {\"uuid\": \"orestes\",\"domain\": \"bluevia\"},\"11\": \"feed de origen\"}]}";
             
             ExtensionRegistry registry = ExtensionRegistry.newInstance();
             registry.add( Feedmessage.source);
+
+            // Read message from text
             JsonFormat.merge(jsonFormat, registry, builder);
             Message m= builder.build();
+            // generator.println( m.getDescriptorForType());
             String s= JsonFormat.printToString( m);
             System.out.println( "jsonFormat= " + s);
         }
@@ -101,12 +110,31 @@ class ProtoJsonTest{
             Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
             // Json Compressed Format test            
             String jsonFormat = ProtoJsonFormat.printToString( feed);
+
+            // Read message from text
+            ProtoJsonFormat.merge( jsonFormat, builder);
+            Message mc= builder.build();
+            // generator.println( mc.getDescriptorForType());
+            String sc= ProtoJsonFormat.printToString( mc);
+            System.out.println( "ProtoJSON Format without extensions= " + sc);
+        }
+        catch (Exception e){
+            System.out.println( e);
+        }
+
+        try{
+            Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
+            // Json Compressed Format test            
+            String jsonFormat = ProtoJsonFormat.printToString( feed);
             ExtensionRegistry registry = ExtensionRegistry.newInstance();
             registry.add( Feedmessage.source);
+
+            // Read message from text
             ProtoJsonFormat.merge( jsonFormat, registry, builder);
             Message mc= builder.build();
+            // generator.println( mc.getDescriptorForType());
             String sc= ProtoJsonFormat.printToString( mc);
-            System.out.println( "ProtoJSON Format= " + sc);
+            System.out.println( "ProtoJSON Format with extensions= " + sc);
         }
         catch (Exception e){
             System.out.println( e);
@@ -118,6 +146,7 @@ class ProtoJsonTest{
             String jsonindexedFormat = ProtoJsonIndexedFormat.printToString( feed);
             ProtoJsonIndexedFormat.merge( jsonindexedFormat, builder);
             Message me= builder.build();
+            generator.println( me.getDescriptorForType());
             String se= ProtoJsonIndexedFormat.printToString( me);
             System.out.println( "json indexed Format= " + se);
         }
@@ -126,20 +155,57 @@ class ProtoJsonTest{
         }
     }
 
-    static void test( Message m, String display){
-            System.out.println( "Printing prueba " + display);
+    static void testTextFormat( Message feed) throws IOException{
+        
+        try{
+            // TextFormat test
+            Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
+            String textFormat = TextFormat.printToString( feed);
+
+            ExtensionRegistry registry = ExtensionRegistry.newInstance();
+            registry.add( Feedmessage.source);
+        
+            // Read message from text
+            TextFormat.merge(textFormat, registry, builder);
+            Message m= builder.build();
+            String s= TextFormat.printToString( m);
+            System.out.println( "textFormat= " + s);
+        }
+        catch (TextFormat.ParseException p){            
+            System.out.println( p);
+        }
+        catch (Exception e){
+            System.out.println( e);
+        }
+    }
+    
+    static void testTextFormatFile( File f) throws IOException {
+        
+    }
+    
+    static void test( Message m, String display) throws IOException{
+        ProtoGenerator g= new ProtoGenerator( System.out);
+            g.println( "Printing " + display);
+
+            g.indent();
             
             String stf = TextFormat.printToString( m);
-            System.out.println( "textformat ***************\n" + stf);
-
+            g.println( "**** Showing TextFormat output ****");
+            g.println( stf);
+            
             String jsonFormat = JsonFormat.printToString(m);
-            System.out.println( "jsonFormat= " + jsonFormat);
-
+            g.println( "**** Showing JsonFormat output ****");
+            g.println( jsonFormat);
+            
             String protojsonFormat = ProtoJsonFormat.printToString(m);
-            System.out.println( "ProtoJSON Format= " + protojsonFormat);
+            g.println( "**** Showing ProtoJSON output ****");
+            g.println( protojsonFormat);
 
             String jsonindexedFormat = ProtoJsonIndexedFormat.printToString(m);
-            System.out.println( "json indexed Format= " + jsonindexedFormat);
+            g.println( "**** Showing ProtoJsonIndexedFormat output ****");
+            g.println( jsonindexedFormat);
+
+            g.outdent();
     }
 
 }

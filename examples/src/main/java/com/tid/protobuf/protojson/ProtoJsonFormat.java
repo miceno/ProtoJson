@@ -233,6 +233,7 @@ public class ProtoJsonFormat {
             generator.print("\"");
             generator.print(": [");
 
+            //TODO: in case an unknown field, it might be represented as a list of repeated. Parser should be aware of this, and in case it reads a field that contains a list of just one element, it should consider it was tagged as an unknown by a proxy.
             boolean firstValue = true;
             for (long value : field.getVarintList()) {
                 log.trace( "");
@@ -346,7 +347,7 @@ public class ProtoJsonFormat {
             write(text.subSequence(pos, size), size - pos);
         }
 
-        private void write(CharSequence data, int size) throws IOException {
+        private void write(CharSequence data, final int size) throws IOException {
             if (size == 0) {
                 return;
             }
@@ -696,6 +697,115 @@ public class ProtoJsonFormat {
         }
 
         /**
+         * If the next token is an unknown, consume it and return it as a string. Otherwise,
+         * throw a {@link ParseException}.
+         */
+        public String consumeUnknown() throws ParseException {
+            StringBuilder result= new StringBuilder( );
+            log.trace( "Unknown field");
+            boolean array = tryConsume("[");
+
+            // An unknown is a list, or a value. A value is an object or a primitive value.
+            if (array) {
+                result.append( currentToken);
+                log.trace( "consuming an array");
+                while (!tryConsume("]")) {
+                    String strValue= consumeUnknownValue();
+                    result.append( strValue );
+                    tryConsume(",");
+                    if ( ",".equals( currentToken)){
+                        result.append( ",");
+                    }
+                }
+                if( "]".equals( currentToken)){
+                    result.append( "]");
+                }
+                else{
+                    // Parse exception: list is not closed.
+                }
+            } else {
+                log.trace( "consuming an object or primitive");
+                result.append( consumeUnknownValue());
+            }                                               
+            
+            return result.toString();
+        }
+
+        public String consumeUnknownValue() throws ParseException {
+        // TODO: merge with UnknownFieldSet of the builder
+        StringBuilder result= new StringBuilder( );
+            if ("{".equals(currentToken())) {
+                result.append( consumeUnknownObject());
+            } else {
+                result.append( consumeUnknownPrimitive());
+            }
+            
+            return result.toString();
+        }
+        
+        
+        public String consumeUnknownPrimitive() throws ParseException{
+            StringBuilder result= new StringBuilder( );
+            
+             //if (!",".equals(tokenizer.currentToken)){
+            // Primitive value
+            if ("null".equals(currentToken())) {
+                log.trace( "null");
+                consume("null");
+                result.append( currentToken);
+            } else if (lookingAtInteger()) {
+                result.append( currentToken);
+                consumeInt64();
+                log.trace( "long= " + result);
+            } else if (lookingAtBoolean()) {
+                result.append( currentToken);
+                boolean b= consumeBoolean();
+                log.trace( "boolean= " + result);
+            } else {
+                result.append( consumeString());
+                log.trace( "string= " + result);
+            }
+            return result.toString();
+        }
+
+        public String consumeUnknownObject() throws ParseException {
+
+            StringBuilder result= new StringBuilder( );
+            result.append( currentToken);
+            consume("{");
+            String endToken = "}";
+
+            while (!tryConsume(endToken)) {
+                if (atEnd()) {
+                    throw parseException("Expected \"" + endToken + "\".");
+                }
+                result.append( currentToken);
+                if( tryConsume( ":")){
+                    result.append( currentToken);
+                }
+                else{
+                    throw parseException("Expected \":\".");
+                }
+                result.append( consumeUnknown());
+                if (tryConsume(",")) {
+                    // there are more fields in the object, so continue
+                    result.append( currentToken);
+                    continue;
+                }
+            }
+            if( endToken.equals( currentToken)){
+                result.append( currentToken);
+            }
+            else{
+                // Exception
+                throw parseException("Object missing closing \"}\".");
+                
+            }
+
+            return result.toString();
+        }
+
+        /**
          * If the next token is a string, consume it, unescape it as a
          * {@link com.google.protobuf.ByteString}, and return it. Otherwise, throw a
          * {@link ParseException}.
@@ -890,7 +1000,11 @@ public class ProtoJsonFormat {
             // Get the UnknownFieldSet
             UnknownFieldSet u= builder.getUnknownFields();
             UnknownFieldSet.Builder unkBuilder= UnknownFieldSet.newBuilder();
+            
+            // Read the unknown field
             handleUnknownField(tokenizer, unkBuilder, number);
+            
+            // Add the new field to the list of unknownfieldset: Merge and then update
             unkBuilder.mergeFrom( u);
             builder.setUnknownFields( unkBuilder.build());
         }
@@ -949,7 +1063,7 @@ public class ProtoJsonFormat {
         .build());
     */
     
-        log.debug( "TODO: handleUnknownValue");
+        log.debug( "handleUnknownValue");
         if ("{".equals(tokenizer.currentToken())) {
             // Message structure
             tokenizer.consume("{");
@@ -964,6 +1078,7 @@ public class ProtoJsonFormat {
             // Primitive value
             if ("null".equals(tokenizer.currentToken())) {
                 log.trace( "null");
+                field.addLengthDelimited( ByteString.copyFromUtf8( "null"));
                 tokenizer.consume("null");
             } else if (tokenizer.lookingAtInteger()) {
                 Long l= tokenizer.consumeInt64();
@@ -978,6 +1093,7 @@ public class ProtoJsonFormat {
                 field.addLengthDelimited( ByteString.copyFromUtf8( string));
                 log.trace( "string= " + string);
             }
+            builder.addField( number, field.build());
         }
     }
     
