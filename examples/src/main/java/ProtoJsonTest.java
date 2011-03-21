@@ -15,75 +15,140 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.File;
+
+import java.nio.channels.FileChannel;
+import java.nio.MappedByteBuffer;
+
+import java.nio.charset.Charset;
+
+import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 
 //import java.text.ParseException;
 
+
 class ProtoJsonTest{
-    public static void main(String[] args) throws IOException {
-
-        ProtoGenerator generator= new ProtoGenerator( System.out);
-        
-        System.out.println( "Starting the example");
-
+    
+    final private static String UTF8= "UTF-8";
+    
+    private static Message buildFeed(){
         Feedmessage.User user = Feedmessage.User.newBuilder()
                             .setUuid( "orestes")
                             .setDomain( "bluevia")
                             .build();
-
         Feedmessage.Entry entry1 = Feedmessage.Entry.newBuilder()
                             .setId( 1)
                             .setLink( "http://www.tid.es")
                             .setOwner( user)
                             .build();
-
         Feedmessage.Entry entry2 = Feedmessage.Entry.newBuilder()
                             .setId( 2)
                             .setLink( "http://www.google.es")
                             .setOwner( user)
                             .setExtension( Feedmessage.source, "feed de origen")
                             .build();
-                            
+
         Feedmessage.Feed feed = Feedmessage.Feed.newBuilder()
             .setId( "feed1")
             .setTitle( "Feed number 1")
             .addEntry( entry1)
             .addEntry( entry2)
             .build();
-                            
+    
+        return feed;    
+        
+    }
+    public static void main(String[] args) throws IOException {
+
+
         System.out.println( "***** Testing output *****");
-        test( entry1, "entry1");
-        test( entry2, "entry2");
+        Message feed= buildFeed();
+        
         test( feed, "feed");
         
-
-
         System.out.println( "***** Testing input *****");
-        
-        testTextFormat( feed);
+                
+        testTextFormat( );
         testTextFormatFile( new File( "textformat.txt"));
         
-        try{
-            // TextFormat test
-            Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
-            String textFormat = TextFormat.printToString( feed);
+        testJsonFormat();
+        
+        testProtoJson();
 
-            ExtensionRegistry registry = ExtensionRegistry.newInstance();
-            registry.add( Feedmessage.source);
-            
-            // Read message from text
-            TextFormat.merge(textFormat, registry, builder);
-            Message m= builder.build();
-            String s= TextFormat.printToString( m);
-            System.out.println( "textFormat= " + s);
-        }
-        catch (TextFormat.ParseException p){            
-            System.out.println( p);
+        testProtoJsonExtensions();
+
+        testProtoJsonIndexed();
+
+    }
+
+    static void testProtoJsonIndexed( ) throws IOException{
+        ProtoGenerator generator= new ProtoGenerator( System.out);
+        
+        Message feed= buildFeed();
+        try{
+            Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
+            // Json indexed Format test            
+            String jsonindexedFormat = ProtoJsonIndexedFormat.printToString( feed);
+            ProtoJsonIndexedFormat.merge( jsonindexedFormat, builder);
+            Message me= builder.build();
+            generator.println( me.getDescriptorForType());
+            String se= ProtoJsonIndexedFormat.printToString( me);
+            System.out.println( "json indexed Format= " + se);
         }
         catch (Exception e){
             System.out.println( e);
         }
+    }
 
+    static void testProtoJsonExtensions( ) throws IOException{
+        ProtoGenerator generator= new ProtoGenerator( System.out);
+        
+        Message feed= buildFeed();
+        try{
+            Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
+            // Json Compressed Format test            
+            String jsonFormat = ProtoJsonFormat.printToString( feed);
+            ExtensionRegistry registry = ExtensionRegistry.newInstance();
+            registry.add( Feedmessage.source);
 
+            // Read message from text
+            ProtoJsonFormat.merge( jsonFormat, registry, builder);
+            Message mc= builder.build();
+            // generator.println( mc.getDescriptorForType());
+            String sc= ProtoJsonFormat.printToString( mc);
+            System.out.println( "ProtoJSON Format with extensions= " + sc);
+        }
+        catch (Exception e){
+            System.out.println( e);
+        }
+    }
+
+    static void testProtoJson( ) throws IOException{
+        ProtoGenerator generator= new ProtoGenerator( System.out);
+        
+        Message feed= buildFeed();
+        try{
+            Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
+            // Json Compressed Format test            
+            String jsonFormat = ProtoJsonFormat.printToString( feed);
+
+            // Read message from text
+            ProtoJsonFormat.merge( jsonFormat, builder);
+            Message mc= builder.build();
+            // generator.println( mc.getDescriptorForType());
+            String sc= ProtoJsonFormat.printToString( mc);
+            System.out.println( "ProtoJSON Format without extensions= " + sc);
+        }
+        catch (Exception e){
+            System.out.println( e);
+        }
+    }
+
+    static void testJsonFormat( ) throws IOException{
+        ProtoGenerator generator= new ProtoGenerator( System.out);
+        
+        Message feed= buildFeed();
         try{
             // JsonFormat test
             Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
@@ -105,58 +170,13 @@ class ProtoJsonTest{
         catch (Exception e){
             System.out.println( e);
         }
-
-        try{
-            Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
-            // Json Compressed Format test            
-            String jsonFormat = ProtoJsonFormat.printToString( feed);
-
-            // Read message from text
-            ProtoJsonFormat.merge( jsonFormat, builder);
-            Message mc= builder.build();
-            // generator.println( mc.getDescriptorForType());
-            String sc= ProtoJsonFormat.printToString( mc);
-            System.out.println( "ProtoJSON Format without extensions= " + sc);
-        }
-        catch (Exception e){
-            System.out.println( e);
-        }
-
-        try{
-            Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
-            // Json Compressed Format test            
-            String jsonFormat = ProtoJsonFormat.printToString( feed);
-            ExtensionRegistry registry = ExtensionRegistry.newInstance();
-            registry.add( Feedmessage.source);
-
-            // Read message from text
-            ProtoJsonFormat.merge( jsonFormat, registry, builder);
-            Message mc= builder.build();
-            // generator.println( mc.getDescriptorForType());
-            String sc= ProtoJsonFormat.printToString( mc);
-            System.out.println( "ProtoJSON Format with extensions= " + sc);
-        }
-        catch (Exception e){
-            System.out.println( e);
-        }
-
-        try{
-            Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
-            // Json indexed Format test            
-            String jsonindexedFormat = ProtoJsonIndexedFormat.printToString( feed);
-            ProtoJsonIndexedFormat.merge( jsonindexedFormat, builder);
-            Message me= builder.build();
-            generator.println( me.getDescriptorForType());
-            String se= ProtoJsonIndexedFormat.printToString( me);
-            System.out.println( "json indexed Format= " + se);
-        }
-        catch (Exception e){
-            System.out.println( e);
-        }
     }
 
-    static void testTextFormat( Message feed) throws IOException{
+
+    static void testTextFormat( ) throws IOException{
+        ProtoGenerator generator= new ProtoGenerator( System.out);
         
+        Message feed= buildFeed();
         try{
             // TextFormat test
             Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
@@ -179,7 +199,37 @@ class ProtoJsonTest{
         }
     }
     
-    static void testTextFormatFile( File f) throws IOException {
+    static private String readFileToString( File file) throws java.io.FileNotFoundException {
+        FileInputStream stream = new FileInputStream(file);
+        try {
+          FileChannel fc = stream.getChannel();
+          MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+          /* Instead of using default, pass in a decoder. */
+          // Old code: return Charset.defaultCharset().decode(bb).toString();
+          return Charset.forName( UTF8).decode(bb).toString();
+        }
+        finally {
+          stream.close();
+        }
+    }
+
+    static private String readFileToString2( File file){
+        byte[] buffer = new byte[(int) file.length()];
+        BufferedInputStream f = null;
+        try {
+            f = new BufferedInputStream(new FileInputStream(file));
+            f.read(buffer);
+        } finally {
+            if (f != null) try { f.close(); } catch (IOException ignored) { }
+        }
+        return new String(buffer);
+    }
+    
+    static void testTextFormatFile( File file) throws IOException {
+        
+        String str1= readFileToString( file);
+        String str2= readFileToString2( file);
+        
         
     }
     
