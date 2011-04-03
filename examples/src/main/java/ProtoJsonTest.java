@@ -70,7 +70,7 @@ class ProtoJsonTest{
         System.out.println( "***** Testing input *****");
                 
         testTextFormat( );
-        testTextFormatFile( new File( "textformat.txt"));
+        testTextFormatFile( new File( "target/classes/textformat.txt"));
         
         testJsonFormat();
         
@@ -199,37 +199,53 @@ class ProtoJsonTest{
         }
     }
     
-    static private String readFileToString( File file) throws java.io.FileNotFoundException {
+    static private String readFileToString( File file) throws java.io.FileNotFoundException, IOException {
+      String result= null;
+      try{
         FileInputStream stream = new FileInputStream(file);
         try {
           FileChannel fc = stream.getChannel();
           MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
           /* Instead of using default, pass in a decoder. */
           // Old code: return Charset.defaultCharset().decode(bb).toString();
-          return Charset.forName( UTF8).decode(bb).toString();
+          result= Charset.forName( UTF8).decode(bb).toString();
         }
         finally {
           stream.close();
         }
+      }
+      catch( java.io.FileNotFoundException e){
+          System.out.println( "exception: file not found");
+          result= null;
+      }
+      return result;
     }
 
-    static private String readFileToString2( File file){
+    static private String readFileToString2( File file) throws java.io.FileNotFoundException, IOException {
         byte[] buffer = new byte[(int) file.length()];
         BufferedInputStream f = null;
+      try{
         try {
             f = new BufferedInputStream(new FileInputStream(file));
             f.read(buffer);
         } finally {
             if (f != null) try { f.close(); } catch (IOException ignored) { }
         }
+      }
+      catch( java.io.FileNotFoundException e){
+          System.out.println( "exception2: file not found");          
+      }
         return new String(buffer);
     }
     
     static void testTextFormatFile( File file) throws IOException {
         
+        System.out.println( "about to read file: " + file);
         String str1= readFileToString( file);
         String str2= readFileToString2( file);
         
+        System.out.println( "str1=" + str1);
+        System.out.println( "str2=" + str2);
         
     }
     
