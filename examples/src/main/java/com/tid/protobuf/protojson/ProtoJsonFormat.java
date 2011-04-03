@@ -231,7 +231,9 @@ public class ProtoJsonFormat {
             generator.print("\"");
             generator.print(entry.getKey().toString());
             generator.print("\"");
-            generator.print(": [");
+            generator.print(":");
+            // Comment out this line to show unknownfields as lists.
+            // generator.print("[");
 
             //TODO: in case an unknown field, it might be represented as a list of repeated. Parser should be aware of this, and in case it reads a field that contains a list of just one element, it should consider it was tagged as an unknown by a proxy.
             boolean firstValue = true;
@@ -269,7 +271,8 @@ public class ProtoJsonFormat {
                 printUnknownFields(value, generator);
                 generator.print("}");
             }
-            generator.print("]");
+            // Comment out this line to show unknownfields as lists.
+            // generator.print("]");
         }
     }
 
@@ -479,6 +482,7 @@ public class ProtoJsonFormat {
 
                 skipWhitespace();
             }
+            log.debug( "currentToken="+ currentToken);
         }
 
         /**
@@ -761,9 +765,9 @@ public class ProtoJsonFormat {
             else{
                 log.trace( "value is not manipulated");
                 unknownValue= currentToken();
+                nextToken();
             }
             log.debug( "unknown value is ="+ unknownValue);
-            nextToken();
             return unknownValue;
         }
 
@@ -1032,9 +1036,11 @@ public class ProtoJsonFormat {
             boolean array = tokenizer.tryConsume("[");
 
             if (array) {
+                log.trace( "consuming an array");
                 while (!tokenizer.tryConsume("]")) {
                     handleValue(tokenizer, extensionRegistry, builder, field, extension, unknown);
                     tokenizer.tryConsume(",");
+                    log.trace( "consuming next element");
                 }
             } else {
                 handleValue(tokenizer, extensionRegistry, builder, field, extension, unknown);
