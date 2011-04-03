@@ -46,7 +46,20 @@ class ProtoJsonTest{
                             .setId( 2)
                             .setLink( "http://www.google.es")
                             .setOwner( user)
-                            .setExtension( Feedmessage.source, "feed de origen")
+                                .setExtension( Feedmessage.source, "feed de origen")
+                                .setExtension( Feedmessage.d, 1.0)
+                                .setExtension( Feedmessage.f, 2.0f)
+                                .setExtension( Feedmessage.i32, -1)
+                                .setExtension( Feedmessage.i64, -1L)
+                                .setExtension( Feedmessage.ui32, 32)
+                                .setExtension( Feedmessage.ui64, 64L)
+                                .setExtension( Feedmessage.si32, -32)
+                                .setExtension( Feedmessage.si64, -64L)
+                                .setExtension( Feedmessage.f32, 32)
+                                .setExtension( Feedmessage.f64, 64L)
+                                .setExtension( Feedmessage.verdad, true)
+                                .setExtension( Feedmessage.s, "[ 1, \"hola\"]")
+                                .setExtension( Feedmessage.bites, ByteString.copyFromUtf8( "Ñ de España"))
                             .build();
 
         Feedmessage.Feed feed = Feedmessage.Feed.newBuilder()
@@ -70,13 +83,13 @@ class ProtoJsonTest{
         System.out.println( "***** Testing input *****");
                 
         testTextFormat( );
-        testTextFormatFile( new File( "target/classes/textformat.txt"));
+        // testTextFormatFile( new File( "target/classes/textformat.txt"));
         
         testJsonFormat();
         
         testProtoJson();
 
-        testProtoJsonExtensions();
+        // testProtoJsonExtensions();
 
         testProtoJsonIndexed();
 
@@ -85,6 +98,7 @@ class ProtoJsonTest{
     static void testProtoJsonIndexed( ) throws IOException{
         ProtoGenerator generator= new ProtoGenerator( System.out);
         
+        System.out.println("Testing testProtoJsonIndexed");
         Message feed= buildFeed();
         try{
             Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
@@ -104,13 +118,14 @@ class ProtoJsonTest{
     static void testProtoJsonExtensions( ) throws IOException{
         ProtoGenerator generator= new ProtoGenerator( System.out);
         
+        System.out.println("Testing testProtoJsonExtensions");
         Message feed= buildFeed();
         try{
             Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
             // Json Compressed Format test            
             String jsonFormat = ProtoJsonFormat.printToString( feed);
             ExtensionRegistry registry = ExtensionRegistry.newInstance();
-            registry.add( Feedmessage.source);
+            Feedmessage.registerAllExtensions( registry);
 
             // Read message from text
             ProtoJsonFormat.merge( jsonFormat, registry, builder);
@@ -127,6 +142,7 @@ class ProtoJsonTest{
     static void testProtoJson( ) throws IOException{
         ProtoGenerator generator= new ProtoGenerator( System.out);
         
+        System.out.println("Testing testProtoJson");
         Message feed= buildFeed();
         try{
             Feedmessage.Feed.Builder builder = Feedmessage.Feed.newBuilder();
@@ -148,6 +164,7 @@ class ProtoJsonTest{
     static void testJsonFormat( ) throws IOException{
         ProtoGenerator generator= new ProtoGenerator( System.out);
         
+        System.out.println("Testing testJsonFormat");
         Message feed= buildFeed();
         try{
             // JsonFormat test
@@ -176,6 +193,7 @@ class ProtoJsonTest{
     static void testTextFormat( ) throws IOException{
         ProtoGenerator generator= new ProtoGenerator( System.out);
         
+        System.out.println("Testing testTextFormat");
         Message feed= buildFeed();
         try{
             // TextFormat test
