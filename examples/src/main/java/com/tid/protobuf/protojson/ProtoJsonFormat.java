@@ -515,6 +515,18 @@ public class ProtoJsonFormat {
         }
 
         /**
+         * Returns {@code true} if the next token is a string, but does not consume it.
+         */
+        public boolean lookingAtString() {
+            if (currentToken.length() == 0) {
+                return false;
+            }
+
+            char c = currentToken.charAt(0);
+            return ( ('\"'== c) || ('\'' == c));
+        }
+
+        /**
          * Returns {@code true} if the next token is an integer, but does not consume it.
          */
         public boolean lookingAtInteger() {
@@ -689,20 +701,12 @@ public class ProtoJsonFormat {
         }
 
         /**
-         * If the next token is a string, consume it and return its (unescaped) value. Otherwise,
-         * throw a {@link ParseException}.
-         */
-        public String consumeString() throws ParseException {
-            return consumeByteString().toStringUtf8();
-        }
-
-        /**
          * If the next token is an unknown, consume it and return it as a string. Otherwise,
          * throw a {@link ParseException}.
          */
         public String consumeUnknown() throws ParseException {
             StringBuilder result= new StringBuilder( );
-            log.trace( "Unknown field");
+            log.trace( "consumeUnknown");
             boolean array = tryConsume("[");
 
             // An unknown is a list, or a value. A value is an object or a primitive value.
@@ -745,27 +749,22 @@ public class ProtoJsonFormat {
         
         
         public String consumeUnknownPrimitive() throws ParseException{
-            StringBuilder result= new StringBuilder( );
             
-             //if (!",".equals(tokenizer.currentToken)){
-            // Primitive value
-            if ("null".equals(currentToken())) {
-                log.trace( "null");
-                consume("null");
-                result.append( currentToken);
-            } else if (lookingAtInteger()) {
-                result.append( currentToken);
-                consumeInt64();
-                log.trace( "long= " + result);
-            } else if (lookingAtBoolean()) {
-                result.append( currentToken);
-                boolean b= consumeBoolean();
-                log.trace( "boolean= " + result);
-            } else {
-                result.append( consumeString());
-                log.trace( "string= " + result);
+            // currentToken contains the elementary JSON Token
+            log.debug( "current Token=" + currentToken());
+            // TODO: strip quotes in case of a string
+            String unknownValue;
+            if( lookingAtString()){
+                log.trace( "strip quotes in case of a string");
+                unknownValue= consumeString();
             }
-            return result.toString();
+            else{
+                log.trace( "value is not manipulated");
+                unknownValue= currentToken();
+            }
+            log.debug( "unknown value is ="+ unknownValue);
+            nextToken();
+            return unknownValue;
         }
 
         public String consumeUnknownObject() throws ParseException {
@@ -804,6 +803,15 @@ public class ProtoJsonFormat {
 
             return result.toString();
         }
+        
+        /**
+         * If the next token is a string, consume it and return its (unescaped) value. Otherwise,
+         * throw a {@link ParseException}.
+         */
+        public String consumeString() throws ParseException {
+            return consumeByteString().toStringUtf8();
+        }
+
 
         /**
          * If the next token is a string, consume it, unescape it as a
@@ -812,7 +820,7 @@ public class ProtoJsonFormat {
          */
         public ByteString consumeByteString() throws ParseException {
             char quote = currentToken.length() > 0 ? currentToken.charAt(0) : '\0';
-            if ((quote != '\"') && (quote != '\'')) {
+            if (!lookingAtString()) {
                 throw parseException("Expected string.");
             }
 
@@ -975,7 +983,10 @@ public class ProtoJsonFormat {
         // TODO: Handle parse exception
         Integer number= Integer.parseInt( name);
         
+        log.debug( "number= " + number);
+        
         field = type.findFieldByNumber( number);
+        log.debug( "field= " + field);
 
         if( field == null){
             // Not a field, maybe an extension
@@ -998,15 +1009,22 @@ public class ProtoJsonFormat {
         // Disabled throwing exception if field not found, since it could be a different version.
         if (unknown) {
             // Get the UnknownFieldSet
-            UnknownFieldSet u= builder.getUnknownFields();
-            UnknownFieldSet.Builder unkBuilder= UnknownFieldSet.newBuilder();
+            UnknownFieldSet.Builder unknownBuilder= UnknownFieldSet.newBuilder();
             
             // Read the unknown field
-            handleUnknownField(tokenizer, unkBuilder, number);
+            handleUnknownField(tokenizer, unknownBuilder, number);
             
-            // Add the new field to the list of unknownfieldset: Merge and then update
-            unkBuilder.mergeFrom( u);
-            builder.setUnknownFields( unkBuilder.build());
+            // Add the new field to the list of unknownfieldset: Merge and then update            
+            log.trace( "merging new unknown");
+            
+            UnknownFieldSet u= builder.getUnknownFields();
+            log.debug( "existing unknowfields map=" + u.asMap().toString());
+            
+            unknownBuilder.mergeFrom( u);
+            UnknownFieldSet unknownFieldSet= unknownBuilder.build();
+            log.debug( "new unknowfields map=" + unknownFieldSet.asMap().toString());
+            builder.setUnknownFields( unknownFieldSet);
+            log.trace( "set unknowns");
         }
 
         if (field != null) {
@@ -1036,66 +1054,16 @@ public class ProtoJsonFormat {
        // TODO: make sure an UnknownFieldSet exists
        log.trace( "Unknown field: " + number);
        tokenizer.consume(":");
-       boolean array = tokenizer.tryConsume("[");
-
-       if (array) {
-           log.trace( "consuming an array");
-           while (!tokenizer.tryConsume("]")) {
-               handleUnknownValue(tokenizer, builder, number);
-               tokenizer.tryConsume(",");
-           }
-       } else {
-           log.trace( "consuming an object or primitive");
-           handleUnknownValue(tokenizer, builder, number);
-       }                                               
+       
+       String unknown= tokenizer.consumeUnknown();
+       log.debug( "unknown value= " + unknown);
+       
+       // Add the string unknown field
+       UnknownFieldSet.Field.Builder field= UnknownFieldSet.Field.newBuilder();
+       field.addLengthDelimited( ByteString.copyFromUtf8( unknown));
+       builder.addField( number, field.build());       
     }
     
-    private static void handleUnknownValue(Tokenizer tokenizer,
-                                    UnknownFieldSet.Builder builder,
-                                    Integer number) throws ParseException {
-    // TODO: merge with UnknownFieldSet of the builder
-    /*
-    builder.setUnknownFields(
-        builder
-        .addField(number,
-            UnknownFieldSet.Field.newBuilder()
-                .addVarint(unknownFieldVal).build())
-        .build());
-    */
-    
-        log.debug( "handleUnknownValue");
-        if ("{".equals(tokenizer.currentToken())) {
-            // Message structure
-            tokenizer.consume("{");
-            do {
-                log.trace( "consuming members of an object");
-                handleUnknownField(tokenizer, builder, number);
-            } while (tokenizer.tryConsume(","));
-            tokenizer.consume("}");
-        }  
-        else { //if (!",".equals(tokenizer.currentToken)){
-            UnknownFieldSet.Field.Builder field= UnknownFieldSet.Field.newBuilder();
-            // Primitive value
-            if ("null".equals(tokenizer.currentToken())) {
-                log.trace( "null");
-                field.addLengthDelimited( ByteString.copyFromUtf8( "null"));
-                tokenizer.consume("null");
-            } else if (tokenizer.lookingAtInteger()) {
-                Long l= tokenizer.consumeInt64();
-                field.addFixed64( l);
-                log.trace( "long= " + l);
-            } else if (tokenizer.lookingAtBoolean()) {
-                boolean b= tokenizer.consumeBoolean();
-                field.addVarint( (b) ? 1: 0 );
-                log.trace( "boolean= " + b);
-            } else {
-                String string= tokenizer.consumeString();
-                field.addLengthDelimited( ByteString.copyFromUtf8( string));
-                log.trace( "string= " + string);
-            }
-            builder.addField( number, field.build());
-        }
-    }
     
 
     private static void handleValue(Tokenizer tokenizer,
