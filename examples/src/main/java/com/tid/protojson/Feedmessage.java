@@ -8,6 +8,19 @@ public final class Feedmessage {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
     registry.add(com.tid.protojson.Feedmessage.source);
+    registry.add(com.tid.protojson.Feedmessage.d);
+    registry.add(com.tid.protojson.Feedmessage.f);
+    registry.add(com.tid.protojson.Feedmessage.i32);
+    registry.add(com.tid.protojson.Feedmessage.i64);
+    registry.add(com.tid.protojson.Feedmessage.ui32);
+    registry.add(com.tid.protojson.Feedmessage.ui64);
+    registry.add(com.tid.protojson.Feedmessage.si32);
+    registry.add(com.tid.protojson.Feedmessage.si64);
+    registry.add(com.tid.protojson.Feedmessage.f32);
+    registry.add(com.tid.protojson.Feedmessage.f64);
+    registry.add(com.tid.protojson.Feedmessage.verdad);
+    registry.add(com.tid.protojson.Feedmessage.s);
+    registry.add(com.tid.protojson.Feedmessage.bites);
   }
   public interface UserOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
@@ -1434,7 +1447,7 @@ public final class Feedmessage {
     boolean hasId();
     String getId();
     
-    // required string title = 2;
+    // optional string title = 2;
     boolean hasTitle();
     String getTitle();
     
@@ -1447,6 +1460,10 @@ public final class Feedmessage {
         getEntryOrBuilderList();
     com.tid.protojson.Feedmessage.EntryOrBuilder getEntryOrBuilder(
         int index);
+    
+    // optional int32 version = 4 [default = 3];
+    boolean hasVersion();
+    int getVersion();
   }
   public static final class Feed extends
       com.google.protobuf.GeneratedMessage
@@ -1509,7 +1526,7 @@ public final class Feedmessage {
       }
     }
     
-    // required string title = 2;
+    // optional string title = 2;
     public static final int TITLE_FIELD_NUMBER = 2;
     private Object title_;
     public boolean hasTitle() {
@@ -1562,20 +1579,27 @@ public final class Feedmessage {
       return entry_.get(index);
     }
     
+    // optional int32 version = 4 [default = 3];
+    public static final int VERSION_FIELD_NUMBER = 4;
+    private int version_;
+    public boolean hasVersion() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getVersion() {
+      return version_;
+    }
+    
     private void initFields() {
       id_ = "";
       title_ = "";
       entry_ = java.util.Collections.emptyList();
+      version_ = 3;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
-      if (!hasTitle()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       for (int i = 0; i < getEntryCount(); i++) {
         if (!getEntry(i).isInitialized()) {
           memoizedIsInitialized = 0;
@@ -1598,6 +1622,9 @@ public final class Feedmessage {
       for (int i = 0; i < entry_.size(); i++) {
         output.writeMessage(3, entry_.get(i));
       }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(4, version_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -1618,6 +1645,10 @@ public final class Feedmessage {
       for (int i = 0; i < entry_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, entry_.get(i));
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(4, version_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1752,6 +1783,8 @@ public final class Feedmessage {
         } else {
           entryBuilder_.clear();
         }
+        version_ = 3;
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       
@@ -1807,6 +1840,10 @@ public final class Feedmessage {
         } else {
           result.entry_ = entryBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.version_ = version_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1855,15 +1892,14 @@ public final class Feedmessage {
             }
           }
         }
+        if (other.hasVersion()) {
+          setVersion(other.getVersion());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
       
       public final boolean isInitialized() {
-        if (!hasTitle()) {
-          
-          return false;
-        }
         for (int i = 0; i < getEntryCount(); i++) {
           if (!getEntry(i).isInitialized()) {
             
@@ -1912,6 +1948,11 @@ public final class Feedmessage {
               addEntry(subBuilder.buildPartial());
               break;
             }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              version_ = input.readInt32();
+              break;
+            }
           }
         }
       }
@@ -1954,7 +1995,7 @@ public final class Feedmessage {
         onChanged();
       }
       
-      // required string title = 2;
+      // optional string title = 2;
       private Object title_ = "";
       public boolean hasTitle() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
@@ -2176,6 +2217,27 @@ public final class Feedmessage {
         return entryBuilder_;
       }
       
+      // optional int32 version = 4 [default = 3];
+      private int version_ = 3;
+      public boolean hasVersion() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public int getVersion() {
+        return version_;
+      }
+      public Builder setVersion(int value) {
+        bitField0_ |= 0x00000008;
+        version_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearVersion() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        version_ = 3;
+        onChanged();
+        return this;
+      }
+      
       // @@protoc_insertion_point(builder_scope:com.tid.protojson.Feed)
     }
     
@@ -2194,6 +2256,110 @@ public final class Feedmessage {
       java.lang.String> source = com.google.protobuf.GeneratedMessage
           .newFileScopedGeneratedExtension(
         java.lang.String.class,
+        null);
+  public static final int D_FIELD_NUMBER = 11;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.lang.Double> d = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Double.class,
+        null);
+  public static final int F_FIELD_NUMBER = 12;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.lang.Float> f = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Float.class,
+        null);
+  public static final int I32_FIELD_NUMBER = 13;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.lang.Integer> i32 = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Integer.class,
+        null);
+  public static final int I64_FIELD_NUMBER = 14;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.lang.Long> i64 = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Long.class,
+        null);
+  public static final int UI32_FIELD_NUMBER = 15;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.lang.Integer> ui32 = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Integer.class,
+        null);
+  public static final int UI64_FIELD_NUMBER = 16;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.lang.Long> ui64 = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Long.class,
+        null);
+  public static final int SI32_FIELD_NUMBER = 17;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.lang.Integer> si32 = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Integer.class,
+        null);
+  public static final int SI64_FIELD_NUMBER = 18;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.lang.Long> si64 = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Long.class,
+        null);
+  public static final int F32_FIELD_NUMBER = 19;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.lang.Integer> f32 = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Integer.class,
+        null);
+  public static final int F64_FIELD_NUMBER = 20;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.lang.Long> f64 = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Long.class,
+        null);
+  public static final int VERDAD_FIELD_NUMBER = 21;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.lang.Boolean> verdad = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Boolean.class,
+        null);
+  public static final int S_FIELD_NUMBER = 22;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.lang.String> s = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.String.class,
+        null);
+  public static final int BITES_FIELD_NUMBER = 23;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      com.google.protobuf.ByteString> bites = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        com.google.protobuf.ByteString.class,
         null);
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_com_tid_protojson_User_descriptor;
@@ -2225,10 +2391,23 @@ public final class Feedmessage {
       "thor\030\004 \001(\0132\027.com.tid.protojson.User\022\014\n\004l" +
       "ink\030\005 \001(\t\022\017\n\007updated\030\006 \001(\005\022\020\n\010publised\030\007" +
       " \001(\005\022&\n\005owner\030\010 \001(\0132\027.com.tid.protojson." +
-      "User*\004\010\n\020\025*\004\010\025\020\037\"J\n\004Feed\022\n\n\002id\030\001 \001(\t\022\r\n\005" +
-      "title\030\002 \002(\t\022\'\n\005entry\030\003 \003(\0132\030.com.tid.pro" +
-      "tojson.Entry:(\n\006source\022\030.com.tid.protojs" +
-      "on.Entry\030\n \001(\t"
+      "User*\004\010\n\020\025*\004\010\025\020\037\"^\n\004Feed\022\n\n\002id\030\001 \001(\t\022\r\n\005" +
+      "title\030\002 \001(\t\022\'\n\005entry\030\003 \003(\0132\030.com.tid.pro" +
+      "tojson.Entry\022\022\n\007version\030\004 \001(\005:\0013:(\n\006sour" +
+      "ce\022\030.com.tid.protojson.Entry\030\n \001(\t:#\n\001d\022",
+      "\030.com.tid.protojson.Entry\030\013 \001(\001:#\n\001f\022\030.c" +
+      "om.tid.protojson.Entry\030\014 \001(\002:%\n\003i32\022\030.co" +
+      "m.tid.protojson.Entry\030\r \001(\005:%\n\003i64\022\030.com" +
+      ".tid.protojson.Entry\030\016 \001(\003:&\n\004ui32\022\030.com" +
+      ".tid.protojson.Entry\030\017 \001(\r:&\n\004ui64\022\030.com" +
+      ".tid.protojson.Entry\030\020 \001(\004:&\n\004si32\022\030.com" +
+      ".tid.protojson.Entry\030\021 \001(\021:&\n\004si64\022\030.com" +
+      ".tid.protojson.Entry\030\022 \001(\022:%\n\003f32\022\030.com." +
+      "tid.protojson.Entry\030\023 \001(\007:%\n\003f64\022\030.com.t" +
+      "id.protojson.Entry\030\024 \001(\006:(\n\006verdad\022\030.com",
+      ".tid.protojson.Entry\030\025 \001(\010:#\n\001s\022\030.com.ti" +
+      "d.protojson.Entry\030\026 \001(\t:\'\n\005bites\022\030.com.t" +
+      "id.protojson.Entry\030\027 \001(\014"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -2256,10 +2435,23 @@ public final class Feedmessage {
           internal_static_com_tid_protojson_Feed_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_com_tid_protojson_Feed_descriptor,
-              new java.lang.String[] { "Id", "Title", "Entry", },
+              new java.lang.String[] { "Id", "Title", "Entry", "Version", },
               com.tid.protojson.Feedmessage.Feed.class,
               com.tid.protojson.Feedmessage.Feed.Builder.class);
           source.internalInit(descriptor.getExtensions().get(0));
+          d.internalInit(descriptor.getExtensions().get(1));
+          f.internalInit(descriptor.getExtensions().get(2));
+          i32.internalInit(descriptor.getExtensions().get(3));
+          i64.internalInit(descriptor.getExtensions().get(4));
+          ui32.internalInit(descriptor.getExtensions().get(5));
+          ui64.internalInit(descriptor.getExtensions().get(6));
+          si32.internalInit(descriptor.getExtensions().get(7));
+          si64.internalInit(descriptor.getExtensions().get(8));
+          f32.internalInit(descriptor.getExtensions().get(9));
+          f64.internalInit(descriptor.getExtensions().get(10));
+          verdad.internalInit(descriptor.getExtensions().get(11));
+          s.internalInit(descriptor.getExtensions().get(12));
+          bites.internalInit(descriptor.getExtensions().get(13));
           return null;
         }
       };
