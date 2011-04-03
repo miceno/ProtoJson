@@ -25,11 +25,33 @@ message Entry {
 
 message Feed{
     optional string id      = 1;
-    required string title   = 2;
+    optional string title   = 2;
     
     repeated Entry  entry   = 3;
+    
+    optional int32 version = 4 [default = 3];
+    
 }
 
 extend Entry{
     optional string source  = 10;
+    optional double d       = 11;
+    optional float f        = 12;
+    
+    optional int32 i32      = 13;
+    optional int64 i64      = 14;
+    
+    optional uint32 ui32    = 15;
+    optional uint64 ui64    = 16;
+    
+    optional sint32 si32    = 17;
+    optional sint64 si64    = 18;
+    
+    optional fixed32 f32    = 19;
+    optional fixed64 f64    = 20;
+    
+    optional bool verdad    = 21;
+    optional string s       = 22;
+    optional bytes bites    = 23;
+    
 }

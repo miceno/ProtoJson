@@ -1,0 +1,23 @@
+
+package com.tid.protojson;
+
+message Entry {
+    required int32  id      = 1;
+    
+    optional string link    = 5;
+    
+    optional int32  updated  = 6;
+    optional int32  publised = 7;
+    
+    repeated string tags= 9;
+        
+}
+
+message Feed{
+    optional string id      = 1;
+    optional string title   = 2;
+    
+    repeated Entry  entry   = 3;
+    
+    optional int32 version = 4 [default = 1];
+}
