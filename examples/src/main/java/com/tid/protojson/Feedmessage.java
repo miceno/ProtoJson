@@ -21,6 +21,7 @@ public final class Feedmessage {
     registry.add(com.tid.protojson.Feedmessage.verdad);
     registry.add(com.tid.protojson.Feedmessage.s);
     registry.add(com.tid.protojson.Feedmessage.bites);
+    registry.add(com.tid.protojson.Feedmessage.listaSint32);
   }
   public interface UserOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
@@ -2329,7 +2330,7 @@ public final class Feedmessage {
           .newFileScopedGeneratedExtension(
         java.lang.Integer.class,
         null);
-  public static final int F64_FIELD_NUMBER = 20;
+  public static final int F64_FIELD_NUMBER = 24;
   public static final
     com.google.protobuf.GeneratedMessage.GeneratedExtension<
       com.tid.protojson.Feedmessage.Entry,
@@ -2360,6 +2361,14 @@ public final class Feedmessage {
       com.google.protobuf.ByteString> bites = com.google.protobuf.GeneratedMessage
           .newFileScopedGeneratedExtension(
         com.google.protobuf.ByteString.class,
+        null);
+  public static final int LISTASINT32_FIELD_NUMBER = 20;
+  public static final
+    com.google.protobuf.GeneratedMessage.GeneratedExtension<
+      com.tid.protojson.Feedmessage.Entry,
+      java.util.List<java.lang.Integer>> listaSint32 = com.google.protobuf.GeneratedMessage
+          .newFileScopedGeneratedExtension(
+        java.lang.Integer.class,
         null);
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_com_tid_protojson_User_descriptor;
@@ -2404,10 +2413,11 @@ public final class Feedmessage {
       ".tid.protojson.Entry\030\021 \001(\021:&\n\004si64\022\030.com" +
       ".tid.protojson.Entry\030\022 \001(\022:%\n\003f32\022\030.com." +
       "tid.protojson.Entry\030\023 \001(\007:%\n\003f64\022\030.com.t" +
-      "id.protojson.Entry\030\024 \001(\006:(\n\006verdad\022\030.com",
+      "id.protojson.Entry\030\030 \001(\006:(\n\006verdad\022\030.com",
       ".tid.protojson.Entry\030\025 \001(\010:#\n\001s\022\030.com.ti" +
       "d.protojson.Entry\030\026 \001(\t:\'\n\005bites\022\030.com.t" +
-      "id.protojson.Entry\030\027 \001(\014"
+      "id.protojson.Entry\030\027 \001(\014:-\n\013listaSint32\022" +
+      "\030.com.tid.protojson.Entry\030\024 \003(\021"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -2452,6 +2462,7 @@ public final class Feedmessage {
           verdad.internalInit(descriptor.getExtensions().get(11));
           s.internalInit(descriptor.getExtensions().get(12));
           bites.internalInit(descriptor.getExtensions().get(13));
+          listaSint32.internalInit(descriptor.getExtensions().get(14));
           return null;
         }
       };
