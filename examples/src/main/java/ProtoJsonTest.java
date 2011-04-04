@@ -53,12 +53,16 @@ class ProtoJsonTest{
                                 .setExtension( Feedmessage.i64, -1L)
                                 .setExtension( Feedmessage.ui32, 32)
                                 .setExtension( Feedmessage.ui64, 64L)
-                                .setExtension( Feedmessage.si32, -32)
                                 .setExtension( Feedmessage.si64, -64L)
                                 .setExtension( Feedmessage.f32, 32)
                                 .setExtension( Feedmessage.f64, 64L)
                                 .setExtension( Feedmessage.verdad, true)
                                 .setExtension( Feedmessage.s, "[ 1, \"hola\"]")
+                                .addExtension( Feedmessage.listaSint32, 31)
+                                .addExtension( Feedmessage.listaSint32, -31)
+                                .addExtension( Feedmessage.listaSint32, 32)
+                                .addExtension( Feedmessage.listaSint32, -32)
+                                .setExtension( Feedmessage.si32, -32)
                                 .setExtension( Feedmessage.bites, ByteString.copyFromUtf8( "Ñ de España"))
                             .build();
 
