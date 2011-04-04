@@ -48,10 +48,12 @@ extend Entry{
     optional sint64 si64    = 18;
     
     optional fixed32 f32    = 19;
-    optional fixed64 f64    = 20;
+    optional fixed64 f64    = 24;
     
     optional bool verdad    = 21;
     optional string s       = 22;
     optional bytes bites    = 23;
+    
+    repeated sint32 listaSint32= 20;
     
 }
