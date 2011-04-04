@@ -715,22 +715,19 @@ public class ProtoJsonFormat {
 
             // An unknown is a list, or a value. A value is an object or a primitive value.
             if (array) {
-                result.append( currentToken);
+                result.append( "[");
                 log.trace( "consuming an array");
                 while (!tryConsume("]")) {
                     String strValue= consumeUnknownValue();
+                    log.debug( "element=" + strValue);
                     result.append( strValue );
-                    tryConsume(",");
                     if ( ",".equals( currentToken)){
+                        log.trace( "appending a ,");
                         result.append( ",");
+                        tryConsume(",");
                     }
                 }
-                if( "]".equals( currentToken)){
-                    result.append( "]");
-                }
-                else{
-                    // Parse exception: list is not closed.
-                }
+                result.append( "]");
             } else {
                 log.trace( "consuming an object or primitive");
                 result.append( consumeUnknownValue());
@@ -1001,6 +998,9 @@ public class ProtoJsonFormat {
                     log.trace( "Found extension: " + number);
                     field= extension.descriptor;
                 }
+                else{
+                    log.trace( "Extension not found: "+ number);
+                }
             }
                 
             // Not a known extension, so it is an unknown
@@ -1012,6 +1012,9 @@ public class ProtoJsonFormat {
         
         // Disabled throwing exception if field not found, since it could be a different version.
         if (unknown) {
+            // An unknown field is one that is not described in the file describing the proto.
+            // It might be a string encoding the type, or a type represented as JSON.
+            // 
             // Get the UnknownFieldSet
             UnknownFieldSet.Builder unknownBuilder= UnknownFieldSet.newBuilder();
             
@@ -1096,6 +1099,22 @@ public class ProtoJsonFormat {
 
     private static Object handlePrimitive(Tokenizer tokenizer, FieldDescriptor field) throws ParseException {
         Object value = null;
+        
+        
+        // TODO: A primitive value might be a string containing the value of the object.
+        // TODO: In case it is a field previously encoded as unknown, create a new tokenizer to parse it
+        if( field.getType() != FieldDescriptor.Type.STRING 
+            && tokenizer.lookingAtString()){
+                
+            log.trace( "a field previously encoded as unknown");
+            String payload= tokenizer.consumeString();
+            log.debug( "payload="+ payload);
+            // Get the next token (not sure about this! :(
+            tokenizer.nextToken();
+            Tokenizer embededTokenizer= new Tokenizer( payload);
+            tokenizer= embededTokenizer;
+        }
+        
         if ("null".equals(tokenizer.currentToken())) {
             tokenizer.consume("null");
             return value;
@@ -1183,6 +1202,7 @@ public class ProtoJsonFormat {
                                        ExtensionRegistry.ExtensionInfo extension,
                                        boolean unknown) throws ParseException {
 
+        // TODO: A primitive value might be a string containing the value of the object.        
         Object value;
         Message.Builder subBuilder;
         if (extension == null) {
@@ -1200,21 +1220,33 @@ public class ProtoJsonFormat {
                 throw tokenizer.parseException("Failed to build " + field.getFullName() + " from " + data);
             }
         }
+        
+        // TODO: In case it is a field previously encoded as unknown, create a new tokenizer to parse it
 
-        tokenizer.consume("{");
-        String endToken = "}";
+        if( tokenizer.lookingAtString()){
+            log.trace( "a field previously encoded as unknown");
+            String payload= tokenizer.consumeString();
+            log.debug( "payload="+ payload);
+            // Get the next token (not sure about this! :(
+            tokenizer.nextToken();
+            Tokenizer embededTokenizer= new Tokenizer( payload);
+            mergeField( embededTokenizer, extensionRegistry, subBuilder);
+        }
+        else{   
+            tokenizer.consume("{");
+            String endToken = "}";
 
-        while (!tokenizer.tryConsume(endToken)) {
-            if (tokenizer.atEnd()) {
-                throw tokenizer.parseException("Expected \"" + endToken + "\".");
-            }
-            mergeField(tokenizer, extensionRegistry, subBuilder);
-            if (tokenizer.tryConsume(",")) {
-                // there are more fields in the object, so continue
-                continue;
+            while (!tokenizer.tryConsume(endToken)) {
+                if (tokenizer.atEnd()) {
+                    throw tokenizer.parseException("Expected \"" + endToken + "\".");
+                }
+                mergeField(tokenizer, extensionRegistry, subBuilder);
+                if (tokenizer.tryConsume(",")) {
+                    // there are more fields in the object, so continue
+                    continue;
+                }
             }
         }
-
         return subBuilder.build();
     }
 
